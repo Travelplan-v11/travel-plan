@@ -1,1713 +1,1703 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0F766E" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Travel Plan PWA</title>
+  <title>Travel Plan</title>
 
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./icon.png" />
-
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Vue 3 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
 
   <style>
+    /* ===== Material-ish (no library) ===== */
     :root{
-      --md-primary:#0F766E;
-      --md-on-primary:#ffffff;
-      --md-surface:#ffffff;
-      --md-surface-2:#F7F8FA;
-      --md-on-surface:#0F172A;
-      --md-muted:#64748B;
-      --md-outline:#E2E8F0;
-      --md-shadow:0 10px 25px rgba(2,6,23,.08);
-      --md-radius:18px;
-      --md-radius-sm:12px;
-      --md-radius-lg:24px;
-      --md-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans TC","PingFang TC","Heiti TC",sans-serif;
+      --primary:#0F766E;
+      --primary-2:#0b5e57;
+      --surface:#ffffff;
+      --surface-2:#f5f7f8;
+      --outline:#e3e7ea;
+      --text:#0b1220;
+      --muted:#5b6472;
+      --shadow: 0 10px 24px rgba(0,0,0,.10);
+      --shadow-2: 0 6px 14px rgba(0,0,0,.12);
+      --radius:18px;
+      --radius-sm:14px;
+      --chip:#eef3f2;
+      --danger:#b42318;
+      --ok:#067647;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:var(--md-font);
-      background:linear-gradient(180deg,#0F766E 0%,#0F766E 140px,#F1F5F9 140px,#F1F5F9 100%);
-      color:var(--md-on-surface);
-      -webkit-tap-highlight-color:transparent;
+      margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Helvetica Neue", Arial;
+      background: var(--surface-2);
+      color: var(--text);
     }
     .app{
-      width:100%; max-width:430px; margin:0 auto; min-height:100vh;
-      display:flex; flex-direction:column;
-      background:transparent;
+      max-width: 860px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-bottom: 28px;
     }
     .topbar{
-      position:sticky; top:0; z-index:50;
-      padding:12px 14px 10px;
-      display:flex; align-items:center; justify-content:space-between;
-      color:var(--md-on-primary);
-      background:rgba(15,118,110,.92);
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid rgba(255,255,255,.12);
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 16px 14px;
+      position: sticky;
+      top:0;
+      z-index: 5;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
     }
-    .topbar .left{display:flex; gap:10px; align-items:center; min-width:0;}
+    .toprow{
+      display:flex; align-items:center; gap:12px;
+    }
     .iconbtn{
-      width:40px; height:40px; border-radius:14px;
+      width:44px;height:44px;border-radius:14px;
+      background: rgba(255,255,255,.14);
       border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.08);
-      color:#fff;
       display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
-    }
-    .titlewrap{min-width:0}
-    .title{
-      font-size:18px; font-weight:800; letter-spacing:.2px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      display:flex; align-items:center; gap:8px;
-    }
-    .subtitle{
-      margin-top:2px;
-      font-size:12px; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:7px 12px; border-radius:999px;
-      border:1px solid var(--md-outline);
-      background:#fff;
-      color:var(--md-on-surface);
-      font-weight:700; font-size:12px;
+      color:#fff;
       cursor:pointer;
       user-select:none;
     }
-    .chip.small{padding:6px 10px;font-size:11px}
-    .chip.primary{
-      background:rgba(255,255,255,.15);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.18);
+    .titlewrap{flex:1; min-width:0}
+    .title{
+      font-size: 22px; font-weight: 800; line-height:1.1;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .chip.ghost{
-      background:transparent;
-      border:1px dashed var(--md-outline);
-      color:var(--md-muted);
-      font-weight:800;
+    .subtitle{
+      font-size: 13px; opacity:.9; margin-top: 4px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .seg{
-      display:flex; gap:8px;
-      background:rgba(0,0,0,.12);
-      border:1px solid rgba(255,255,255,.18);
-      padding:6px; border-radius:16px;
-    }
-    .seg button{
-      border:none; background:transparent; color:rgba(255,255,255,.78);
-      width:42px; height:38px; border-radius:12px;
-      cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .seg button.active{
-      background:#fff; color:var(--md-primary);
-      box-shadow:0 8px 18px rgba(2,6,23,.15);
-      font-weight:900;
-    }
-
-    .daysbar{
-      padding:10px 14px 12px;
-      display:flex; gap:10px; overflow:auto;
-      background:rgba(15,118,110,.92);
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid rgba(255,255,255,.12);
+    .segbar{
+      margin-top: 12px;
+      display:flex; gap:10px;
+      overflow:auto;
+      padding-bottom: 2px;
     }
     .daypill{
       flex:0 0 auto;
-      width:74px; height:62px;
-      border-radius:18px;
-      border:2px solid transparent;
-      background:rgba(255,255,255,.14);
+      min-width: 84px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
       color:#fff;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
       cursor:pointer;
+      user-select:none;
+      text-align:center;
     }
-    .daypill .d{font-size:12px; opacity:.86; font-weight:700;}
-    .daypill .n{font-size:16px; font-weight:900; margin-top:2px;}
+    .daypill .d{font-size:12px; opacity:.9}
+    .daypill .n{font-size:18px; font-weight:900; margin-top:2px}
     .daypill.active{
       background:#fff;
-      color:var(--md-primary);
-      border-color:#fff;
-      box-shadow:0 12px 24px rgba(2,6,23,.18);
-      transform: translateY(1px);
+      color: var(--primary);
+      border-color: rgba(255,255,255,.85);
+      box-shadow: 0 10px 22px rgba(0,0,0,.16);
     }
 
-    .content{
-      padding:14px;
-      padding-bottom:90px;
-    }
+    .content{padding: 14px 14px 0}
 
     .card{
-      background:var(--md-surface);
-      border:1px solid var(--md-outline);
-      border-radius:var(--md-radius);
-      box-shadow:0 10px 25px rgba(2,6,23,.06);
+      background: var(--surface);
+      border:1px solid var(--outline);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
     }
-    .card.pad{padding:14px}
-    .card + .card{margin-top:12px}
-
-    .field label{
-      display:block; font-size:11px; font-weight:900;
-      color:var(--md-muted);
-      letter-spacing:.6px;
-      margin-bottom:6px;
+    .cardhead{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom: 10px;
     }
-    .input, select, textarea{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--md-outline);
-      background:#fff;
-      font-weight:800;
-      outline:none;
-      color:var(--md-on-surface);
+    .cardtitle{
+      font-size: 16px; font-weight: 800;
+      display:flex; align-items:center; gap:10px;
     }
-    textarea{resize:none}
-    .row{display:flex; gap:10px}
-    .row > *{flex:1}
-
     .btn{
-      width:100%;
-      padding:13px 14px;
-      border:none; border-radius:16px;
-      font-weight:900;
-      cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 14px;
+      cursor:pointer; user-select:none;
+      border:1px solid var(--outline);
+      background: #fff;
+      color: var(--text);
+      font-weight: 700;
     }
     .btn.primary{
-      background:var(--md-primary);
-      color:var(--md-on-primary);
-      box-shadow:0 14px 28px rgba(15,118,110,.25);
+      background: var(--primary);
+      color:#fff;
+      border-color: rgba(255,255,255,.0);
+      box-shadow: var(--shadow-2);
     }
     .btn.tonal{
-      background:rgba(15,118,110,.10);
-      color:var(--md-primary);
-      border:1px solid rgba(15,118,110,.18);
+      background: rgba(15,118,110,.10);
+      color: var(--primary);
+      border-color: rgba(15,118,110,.18);
     }
     .btn.danger{
-      background:#FEE2E2; color:#B91C1C; border:1px solid #FECACA;
+      background: rgba(180,35,24,.08);
+      color: var(--danger);
+      border-color: rgba(180,35,24,.18);
     }
-    .btn.inline{
-      width:auto; padding:10px 12px; border-radius:14px;
-    }
+    .btn.small{height:36px; padding:0 12px; border-radius: 12px; font-size: 13px;}
+    .btn:active{transform: translateY(1px)}
 
-    .muted{color:var(--md-muted)}
-    .tiny{font-size:12px}
-    .divider{height:1px;background:var(--md-outline);margin:12px 0}
-    .spacer8{height:8px}
-    .spacer12{height:12px}
-    .spacer16{height:16px}
-
-    /* Flight card */
-    .flightCard{
-      color:#fff;
-      border:none;
-      background:linear-gradient(90deg,#2563EB 0%, #0F766E 100%);
-      border-radius:22px;
-      overflow:hidden;
-      position:relative;
-      box-shadow:0 18px 40px rgba(2,6,23,.18);
-    }
-    .flightCard .inner{padding:14px}
-    .flightGrid{
-      display:grid; grid-template-columns:1fr 1.1fr 1fr;
-      gap:10px; align-items:center;
-    }
-    .flightTime{
-      text-align:center;
-      border-bottom:1px solid rgba(255,255,255,.22);
-      padding-bottom:8px;
-    }
-    .flightTime .t{
-      font-size:26px; font-weight:950; letter-spacing:.4px;
-    }
-    .flightTime .label{
-      margin-top:4px;
-      font-size:12px; opacity:.85; font-weight:800;
-    }
-    .flightTime .ap{
-      margin-top:4px;
-      font-size:15px; font-weight:950; letter-spacing:.8px;
-    }
-    .mid{
-      text-align:center;
-      display:flex; flex-direction:column; align-items:center; gap:8px;
-    }
-    .mid .fn{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:900; font-size:12px; opacity:.9; letter-spacing:1px}
-    .mid .dur{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.22);
-      font-weight:900;
-      font-size:13px;
-      white-space:nowrap;
-    }
-    .offsetBadge{
-      display:inline-flex; align-items:center; justify-content:center;
-      min-width:46px;
-      padding:8px 12px;
-      border-radius:999px;
+    .row{display:flex; gap:12px; flex-wrap:wrap}
+    .col{flex:1; min-width: 180px}
+    label{display:block; font-size: 12px; color: var(--muted); margin: 10px 0 6px}
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--outline);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 16px;
+      outline:none;
       background:#fff;
-      color:#0F766E;
-      font-weight:950;
-      border:1px solid rgba(255,255,255,.6);
-      box-shadow:0 10px 20px rgba(2,6,23,.18);
     }
-    .flightActions{
-      margin-top:10px;
-      display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap;
+    textarea{min-height: 92px; resize: vertical}
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(15,118,110,.55);
+      box-shadow: 0 0 0 4px rgba(15,118,110,.12);
     }
-    .flightActions .chip{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.18)}
-    .flightActions .chip strong{font-weight:950}
 
-    /* Itinerary items */
-    .item{
-      display:flex; gap:10px;
-      padding:12px;
-      border-radius:18px;
-      border:1px solid var(--md-outline);
-      background:#fff;
-      box-shadow:0 10px 18px rgba(2,6,23,.05);
-    }
-    .timeBox{
-      width:78px; flex:0 0 auto;
-      border-radius:16px;
-      border:1px solid var(--md-outline);
-      background:var(--md-surface-2);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      padding:10px 8px;
+    /* Chips */
+    .chips{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--chip);
+      border: 1px solid var(--outline);
+      font-weight: 700;
+      color: var(--text);
       cursor:pointer;
+      user-select:none;
+      display:inline-flex; align-items:center; gap:8px;
     }
-    .timeBox .tt{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:950;font-size:20px}
-    .timeBox .edit{font-size:11px;color:var(--md-muted);margin-top:3px;font-weight:900}
-    .itemMain{flex:1; min-width:0}
-    .itemMain input{border:none; padding:0; background:transparent; width:100%; font-weight:950}
-    .itemMain .sub{
-      margin-top:6px;
+    .chip.active{
+      background: rgba(15,118,110,.12);
+      border-color: rgba(15,118,110,.26);
+      color: var(--primary);
+    }
+
+    /* Itinerary item */
+    .it{
+      border:1px solid var(--outline);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fff;
+      margin-top: 10px;
+    }
+    .itTop{
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .timebox{
+      width: 86px; flex:0 0 auto;
+      border-radius: 14px;
+      border:1px solid var(--outline);
+      padding: 10px 10px 8px;
+      text-align:center;
+      background: var(--surface-2);
+    }
+    .timebox .t{font-size: 22px; font-weight: 900; letter-spacing:.5px}
+    .timebox .edit{font-size: 12px; color: var(--muted); margin-top: 2px}
+    .itMain{flex:1; min-width:0}
+    .itTitle{
+      font-weight: 900; font-size: 16px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .itSub{
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
       display:flex; align-items:center; gap:8px;
-      color:var(--md-muted);
-      font-size:12px; font-weight:800;
-      min-width:0;
     }
-    .locline{
-      display:flex; gap:8px; align-items:center; min-width:0;
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--outline);
+      background: var(--surface-2);
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--muted);
+      flex:0 0 auto;
     }
-    .locline input{
-      flex:1; min-width:0;
-      color:var(--md-muted);
-      font-weight:900;
-    }
-    .pillrow{
-      margin-top:10px;
-      display:flex; gap:8px; flex-wrap:wrap;
-      align-items:center;
-    }
-    .lockPill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 12px; border-radius:999px;
-      border:1px solid var(--md-outline);
-      background:var(--md-surface-2);
-      font-weight:950;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .lockPill.on{
-      border-color:rgba(15,118,110,.35);
-      background:rgba(15,118,110,.10);
-      color:var(--md-primary);
-    }
-
-    /* Category pills */
-    .catbar{
-      display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;
-    }
-    .catpill{
-      padding:8px 12px; border-radius:999px;
-      border:1px solid var(--md-outline);
+    .badge.ok{color: var(--ok); border-color: rgba(6,118,71,.24); background: rgba(6,118,71,.08)}
+    .itActions{display:flex; gap:10px; align-items:center}
+    .tinyIcon{
+      width:40px; height:40px; border-radius: 14px;
+      border:1px solid var(--outline);
       background:#fff;
-      font-weight:950;
-      font-size:12px;
+      display:flex; align-items:center; justify-content:center;
       cursor:pointer;
-      user-select:none;
+    }
+    .itMeta{
+      margin-top: 10px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .metaPill{
       display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--outline);
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 13px;
     }
-    .catpill.active{
-      border-color:rgba(15,118,110,.35);
-      background:rgba(15,118,110,.10);
-      color:var(--md-primary);
+    .metaPill.muted{background: var(--surface-2); color: var(--muted)}
+    .switch{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--outline);
+      background:#fff;
+      font-weight: 800;
+      font-size: 13px;
     }
-
-    /* Connector (between items) */
-    .connector{
-      margin:10px 0 16px;
-      padding-left:92px;
-    }
-    .connectorInner{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
-    .routebtn{
-      padding:9px 12px; border-radius:999px;
-      border:1px solid rgba(15,118,110,.18);
-      background:rgba(15,118,110,.10);
-      color:var(--md-primary);
-      font-weight:950;
-      cursor:pointer;
-      display:inline-flex; align-items:center; gap:8px;
+    .switch input{width:auto}
+    .routebar{
+      margin-top: 10px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
     }
     .routechip{
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid var(--md-outline);
-      background:#fff;
-      font-weight:950;
-      font-size:12px;
       display:inline-flex; align-items:center; gap:8px;
-      max-width:100%;
-      white-space:nowrap;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--outline);
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--text);
     }
-    .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+    .routechip b{font-weight: 900}
+    .hr{height:1px; background: var(--outline); margin: 12px 0}
 
-    /* Bottom FAB */
-    .fabwrap{
-      position:fixed;
-      left:50%;
-      bottom:16px;
-      transform:translateX(-50%);
-      width:100%;
-      max-width:430px;
-      padding:0 14px;
-      pointer-events:none;
-      z-index:60;
+    /* Tabs (Itinerary/Translate/Expense) */
+    .tabrow{
+      display:flex; gap:10px;
     }
-    .fab{
-      pointer-events:auto;
-      width:100%;
-      border-radius:22px;
-      padding:14px;
-      font-weight:950;
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      border:none;
+    .tabbtn{
+      flex:1;
+      height: 44px;
+      border-radius: 14px;
+      border:1px solid var(--outline);
+      background:#fff;
+      font-weight: 900;
       cursor:pointer;
-      background:var(--md-primary);
-      color:#fff;
-      box-shadow:0 22px 40px rgba(15,118,110,.30);
+    }
+    .tabbtn.active{
+      background: rgba(15,118,110,.12);
+      border-color: rgba(15,118,110,.26);
+      color: var(--primary);
     }
 
-    /* Wheel modal */
-    .overlay{
-      position:fixed; inset:0; z-index:100;
-      background:rgba(2,6,23,.45);
-      backdrop-filter: blur(2px);
-      display:flex; align-items:flex-end;
+    /* Modal */
+    .backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.42);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      z-index: 30;
+      padding: 14px;
     }
+    .backdrop.show{display:flex}
     .sheet{
       width:100%;
-      max-width:430px;
-      margin:0 auto;
+      max-width: 860px;
       background:#fff;
-      border-radius:26px 26px 0 0;
-      border:1px solid var(--md-outline);
-      box-shadow:0 -20px 60px rgba(2,6,23,.25);
-      padding:14px 14px 20px;
-    }
-    .sheetHeader{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:4px 4px 10px;
-      border-bottom:1px solid var(--md-outline);
-    }
-    .sheetHeader .h{
-      font-size:16px; font-weight:950;
-    }
-    .wheel{
-      display:flex; justify-content:center;
-      height:170px;
-      margin-top:14px;
-      background:var(--md-surface-2);
-      border:1px solid var(--md-outline);
-      border-radius:18px;
-      overflow:hidden;
-      position:relative;
-    }
-    .wheel .hl{
-      position:absolute; top:50%; left:0; right:0; height:44px;
-      transform:translateY(-50%);
-      background:rgba(15,118,110,.10);
-      border-top:1px solid rgba(15,118,110,.20);
-      border-bottom:1px solid rgba(15,118,110,.20);
-      pointer-events:none;
-    }
-    .wheelcol{
-      width:110px;
+      border-radius: 22px;
+      border:1px solid var(--outline);
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
+      padding: 14px;
+      max-height: 88vh;
       overflow:auto;
-      scroll-snap-type:y mandatory;
-      padding:63px 0;
     }
-    .wheelcol::-webkit-scrollbar{display:none}
-    .wheelitem{
-      height:44px;
-      display:flex; align-items:center; justify-content:center;
-      scroll-snap-align:center;
-      font-weight:900;
-      color:#94A3B8;
-      font-size:18px;
-    }
-    .wheelitem.sel{
-      color:var(--md-primary);
-      font-size:22px;
-      font-weight:950;
-    }
-
-    /* Translate */
-    .chipsGrid{display:flex;gap:8px;flex-wrap:wrap}
-    .chipPhrase{
-      padding:9px 12px;border-radius:999px;
-      border:1px solid var(--md-outline);
-      background:#fff;font-weight:950;font-size:12px;cursor:pointer;
-    }
-
-    /* Money */
-    .moneyHero{
-      background:linear-gradient(90deg,#0F766E 0%, #115E59 100%);
-      color:#fff;
-      border:none;
-      padding:18px;
-      border-radius:22px;
-      box-shadow:0 18px 40px rgba(2,6,23,.18);
-      position:relative;
-      overflow:hidden;
-    }
-    .moneyHero .big{font-size:38px;font-weight:950;letter-spacing:.4px}
-    .moneyHero .small{opacity:.9;font-weight:900}
-    .rateBox{
-      position:absolute; right:14px; top:14px;
-      display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-    }
-    .rateBox input{
-      width:110px; text-align:right;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.30);
-      background:rgba(255,255,255,.92);
-      font-weight:950;
-    }
-
-    .listrow{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:12px;
-      border:1px solid var(--md-outline);
-      border-radius:18px;
-      background:#fff;
-    }
-
+    .sheetHead{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 8px}
+    .sheetTitle{font-weight: 900; font-size: 16px}
     .toast{
-      position:fixed; left:50%; bottom:90px; transform:translateX(-50%);
-      background:#0B1220; color:#fff;
-      padding:10px 14px; border-radius:999px;
-      font-weight:900; font-size:12px;
-      opacity:.95;
-      z-index:200;
-      box-shadow:0 18px 40px rgba(2,6,23,.25);
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom: 16px;
+      background:#111827;
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      display:none;
+      z-index: 40;
+      max-width: calc(100% - 28px);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
+    .toast.show{display:block}
+    .hint{font-size:12px; color: var(--muted); margin-top: 8px; line-height:1.4}
   </style>
 </head>
 
 <body>
-<div id="app" class="app">
-  <!-- Top bar -->
+<div class="app">
+
+  <!-- Top -->
   <div class="topbar">
-    <div class="left">
-      <button class="iconbtn" v-if="hasStarted" @click="goBack"><i class="fa-solid fa-arrow-left"></i></button>
-      <div class="titlewrap" v-if="hasStarted">
-        <div class="title">
-          {{ setup.destination }}
-          <span class="chip primary small"><strong>{{ totalDays }}</strong> 天</span>
-        </div>
-        <div class="subtitle">{{ fmtDate(setup.startDate) }} - {{ fmtDate(setup.endDate) }}</div>
+    <div class="toprow">
+      <div class="iconbtn" id="btnReset" title="新行程 / 重置">↺</div>
+      <div class="titlewrap">
+        <div class="title" id="appTitle">Travel Plan</div>
+        <div class="subtitle" id="appSubtitle">尚未建立行程</div>
       </div>
-      <div class="titlewrap" v-else>
-        <div class="title">Travel Plan</div>
-        <div class="subtitle">PWA / Offline-first</div>
-      </div>
+      <div class="iconbtn" id="btnTabPlan" title="行程">📅</div>
+      <div class="iconbtn" id="btnTabTranslate" title="翻譯">🌐</div>
+      <div class="iconbtn" id="btnTabMoney" title="花費">💲</div>
     </div>
-
-    <div class="seg" v-if="hasStarted">
-      <button :class="{active:viewMode==='plan'}" @click="viewMode='plan'"><i class="fa-regular fa-calendar-check"></i></button>
-      <button :class="{active:viewMode==='translate'}" @click="viewMode='translate'"><i class="fa-solid fa-language"></i></button>
-      <button :class="{active:viewMode==='money'}" @click="viewMode='money'"><i class="fa-solid fa-dollar-sign"></i></button>
-    </div>
+    <div class="segbar" id="dayBar"></div>
   </div>
 
-  <!-- Days bar -->
-  <div class="daysbar" v-if="hasStarted">
-    <div class="daypill" v-for="(d,idx) in days" :key="d.fullDate" :class="{active: currentDayIdx===idx}" @click="currentDayIdx=idx">
-      <div class="d">{{ d.shortDate }}</div>
-      <div class="n">D{{ idx+1 }}</div>
-    </div>
-    <div class="daypill" style="width:62px" @click="addDay">
-      <div class="n"><i class="fa-solid fa-plus"></i></div>
-      <div class="d">加日</div>
-    </div>
-  </div>
+  <div class="content">
 
-  <!-- Setup -->
-  <div class="content" v-if="!hasStarted">
-    <div class="card pad">
-      <div class="field">
-        <label>目的地 DESTINATION</label>
-        <input class="input" v-model="searchQuery" @input="debounceSearch" placeholder="輸入城市 (例如: 大阪, 曼谷...)" />
-        <div class="spacer8"></div>
-
-        <div v-if="suggestions.length" class="card" style="border-radius:18px; overflow:hidden">
-          <div v-for="(s,i) in suggestions" :key="i" style="padding:12px 14px;border-bottom:1px solid var(--md-outline);cursor:pointer"
-               @click="selectLocation(s)">
-            <div style="font-weight:950">{{ s.display_name.split(',')[0] }}</div>
-            <div class="tiny muted" style="margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.display_name }}</div>
-          </div>
-        </div>
-
-        <div v-if="detectedCountry" class="spacer12"></div>
-        <div v-if="detectedCountry" class="card pad" style="border-radius:18px;background:rgba(15,118,110,.08);border-color:rgba(15,118,110,.18)">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-            <div style="font-weight:950;color:var(--md-primary)">
-              <i class="fa-solid fa-circle-check"></i> 偵測到：{{ detectedCountry }}
-            </div>
-            <div class="chip small" style="border-color:rgba(15,118,110,.25);background:#fff;color:var(--md-primary)">
-              轉為 <strong>{{ setup.currency }}</strong>
-            </div>
-          </div>
+    <!-- Main Tabs -->
+    <div class="card">
+      <div class="cardhead">
+        <div class="cardtitle">功能</div>
+        <div class="tabrow" style="width: 340px; max-width: 100%;">
+          <button class="tabbtn active" id="tabPlan">行程</button>
+          <button class="tabbtn" id="tabTranslate">翻譯</button>
+          <button class="tabbtn" id="tabMoney">花費</button>
         </div>
       </div>
-
-      <div class="spacer16"></div>
-
-      <div class="row">
-        <div class="field">
-          <label>去程 START</label>
-          <input class="input" type="date" v-model="setup.startDate" />
-        </div>
-        <div class="field">
-          <label>回程 END</label>
-          <input class="input" type="date" v-model="setup.endDate" />
-        </div>
-      </div>
-
-      <div class="spacer16"></div>
-
-      <div class="field">
-        <label>貨幣 CURRENCY</label>
-        <select class="input" v-model="setup.currency">
-          <optgroup label="Asia">
-            <option value="TWD">TWD 台幣</option>
-            <option value="JPY">JPY 日幣</option>
-            <option value="KRW">KRW 韓元</option>
-            <option value="CNY">CNY 人民幣</option>
-            <option value="HKD">HKD 港幣</option>
-            <option value="THB">THB 泰銖</option>
-            <option value="SGD">SGD 新幣</option>
-            <option value="VND">VND 越南盾</option>
-            <option value="MYR">MYR 馬幣</option>
-            <option value="PHP">PHP 披索</option>
-            <option value="IDR">IDR 印尼盾</option>
-          </optgroup>
-          <optgroup label="Americas">
-            <option value="USD">USD 美金</option>
-            <option value="CAD">CAD 加幣</option>
-          </optgroup>
-          <optgroup label="Europe">
-            <option value="EUR">EUR 歐元</option>
-            <option value="GBP">GBP 英鎊</option>
-            <option value="CHF">CHF 瑞士法郎</option>
-          </optgroup>
-          <optgroup label="Oceania">
-            <option value="AUD">AUD 澳幣</option>
-            <option value="NZD">NZD 紐幣</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <div class="spacer16"></div>
-
-      <button class="btn primary" @click="initTrip">
-        建立行程
-      </button>
-
-      <div class="spacer12"></div>
-      <div class="tiny muted">
-        無金鑰定位：OpenStreetMap Nominatim；路線時間：OSRM(步行/開車)；大眾運輸以 Google Maps 開啟。
-      </div>
+      <div class="hint" id="pwaHint">PWA / Offline-first（首次啟動會先進入「建立行程」嚮導）</div>
     </div>
 
-    <div class="spacer12"></div>
-
-    <div class="card pad">
-      <div style="font-weight:950">PWA 狀態</div>
-      <div class="tiny muted" style="margin-top:6px">
-        Service Worker：<strong>{{ swStatus }}</strong>
-      </div>
-      <div class="spacer12"></div>
-      <button class="btn tonal" @click="forceReload">重新載入（清快取後建議用）</button>
-    </div>
-  </div>
-
-  <!-- Main -->
-  <div class="content" v-else>
     <!-- PLAN -->
-    <div v-if="viewMode==='plan'">
-      <div class="card pad">
-        <div style="font-size:18px;font-weight:950">{{ currentDay.date }}</div>
-        <div class="spacer8"></div>
-        <input class="input" v-model="currentDay.title" placeholder="輸入當日主題..." />
-      </div>
-
-      <!-- Flights (multi segments) -->
-      <div class="spacer12"></div>
-      <div class="flightCard" v-if="currentDayFlights.length">
-        <div class="inner">
-          <div v-for="(seg,si) in currentDayFlights" :key="seg.id" style="margin-bottom:14px">
-            <div class="flightGrid">
-              <div class="flightTime">
-                <div class="t">{{ seg.departTime }}</div>
-                <div class="label">起飛</div>
-                <div class="ap">{{ seg.departAirport || '---' }}</div>
-              </div>
-
-              <div class="mid">
-                <div class="fn">{{ seg.flightNo || 'FLIGHT' }}</div>
-                <div class="dur">
-                  <i class="fa-solid fa-plane"></i>
-                  <span>飛行 {{ minsToHM(seg.durationMin) }}</span>
-                </div>
-                <div v-if="seg.arrivalOffset==='1'" class="offsetBadge">+1日</div>
-              </div>
-
-              <div class="flightTime">
-                <div class="t">{{ seg.arriveTime }}</div>
-                <div class="label">抵達</div>
-                <div class="ap">{{ seg.arriveAirport || '---' }}</div>
-              </div>
-            </div>
-
-            <div class="flightActions">
-              <span class="chip small" @click="openFlightEditor(seg.id)"><strong>編輯</strong> 航班</span>
-              <span class="chip small" @click="removeFlight(seg.id)"><strong>刪除</strong></span>
-            </div>
-
-            <div v-if="si < currentDayFlights.length-1" class="spacer12"></div>
-          </div>
-
-          <button class="btn inline tonal" @click="addFlightSegment" style="width:100%;border-radius:18px">
-            <i class="fa-solid fa-plus"></i> 新增航班（轉機/第二段也按這個）
-          </button>
+    <div id="viewPlan">
+      <div class="card">
+        <div class="cardhead">
+          <div class="cardtitle">行程</div>
+          <button class="btn primary" id="btnAddItem">＋ 新增行程</button>
         </div>
-      </div>
 
-      <div v-else class="card pad">
-        <button class="btn tonal" @click="addFlightSegment">
-          <i class="fa-solid fa-plane"></i> 新增當日航班（支援轉機/兩段）
-        </button>
-      </div>
-
-      <!-- Itinerary -->
-      <div class="spacer12"></div>
-
-      <div v-for="(it, idx) in currentDay.items" :key="it.id">
-        <div class="item">
-          <div class="timeBox" @click="openWheel('time', idx)">
-            <div class="tt">{{ it.time || '--:--' }}</div>
-            <div class="edit">修改</div>
+        <div class="row" style="align-items:center">
+          <div class="col">
+            <div class="switch">
+              <input type="checkbox" id="toggleAutoPush" />
+              <span>自動推移時間（建議開啟）</span>
+            </div>
+            <div class="hint">開啟後：你改「停留/交通」會自動把下一個時間往後推；若某一筆需要固定時間，請用「鎖定」</div>
           </div>
-
-          <div class="itemMain">
-            <input v-model="it.activity" placeholder="行程名稱..." />
-            <div class="sub">
-              <i class="fa-solid fa-location-dot" style="color:var(--md-primary)"></i>
-              <div class="locline">
-                <input v-model="it.location" placeholder="地點（輸入店名/景點，點右側定位）" @blur="autoGeocode(idx)" />
-                <span class="chip small" @click="geocodeItem(idx)"><i class="fa-solid fa-crosshairs"></i> 定位</span>
-              </div>
+          <div class="col">
+            <div class="switch">
+              <input type="checkbox" id="toggleShowRoutes" checked />
+              <span>顯示路線時間</span>
             </div>
-
-            <div class="tiny muted" v-if="it.geo && it.geo.display" style="margin-top:6px;display:flex;gap:8px;align-items:center">
-              <span class="chip small" style="background:rgba(15,118,110,.10);border-color:rgba(15,118,110,.18);color:var(--md-primary)">
-                已定位
-              </span>
-              <span class="truncate">{{ it.geo.display }}</span>
-            </div>
-
-            <div class="catbar">
-              <span v-for="c in categories" :key="c.key"
-                class="catpill" :class="{active: it.category===c.key}"
-                @click="it.category = c.key; saveAll()">
-                <i class="fa-solid" :class="c.icon"></i> {{ c.label }}
-              </span>
-            </div>
-
-            <div class="pillrow">
-              <span class="routechip" @click="openWheel('stay', idx)">
-                <i class="fa-solid fa-hourglass-half"></i>
-                停留 {{ minsToHM(it.stayMin) }}
-              </span>
-
-              <span class="lockPill" :class="{on: it.locked}" @click="it.locked=!it.locked; saveAll(); autoReschedule(currentDayIdx)">
-                <i class="fa-solid fa-lock" v-if="it.locked"></i>
-                <i class="fa-solid fa-lock-open" v-else></i>
-                {{ it.locked ? '已鎖定時間' : '未鎖定' }}
-              </span>
-
-              <span class="chip small" @click="removeItem(idx)" style="border-color:#FECACA;background:#FEE2E2;color:#B91C1C">
-                <i class="fa-solid fa-trash"></i> 刪除
-              </span>
-            </div>
+            <div class="hint">步行/開車/大眾：以座標距離估算（免金鑰）。也提供一鍵打開 Google Maps。</div>
           </div>
         </div>
 
-        <!-- Connector to next -->
-        <div class="connector" v-if="idx < currentDay.items.length-1">
-          <div class="connectorInner">
-            <span class="routechip" @click="openWheel('transit', idx)">
-              <i class="fa-solid" :class="getTransIcon(it.toNext.mode)"></i>
-              {{ transLabel(it.toNext) }}
-            </span>
+        <div class="hr"></div>
+        <div id="itList"></div>
 
-            <button class="routebtn" @click="calcRoutes(idx)">
-              <i class="fa-solid fa-route"></i> 路線
-            </button>
-
-            <span class="routechip" v-if="it.route && it.route.walkMin!=null">
-              🚶 步行 {{ it.route.walkMin }}m
-            </span>
-            <span class="routechip" v-if="it.route && it.route.driveMin!=null">
-              🚗 開車 {{ it.route.driveMin }}m
-            </span>
-            <span class="routechip">
-              🚇 <span class="truncate">大眾運輸用 Google</span>
-            </span>
-
-            <button class="routebtn" @click="openGoogleDirections(idx)">
-              <i class="fa-brands fa-google"></i> Google Maps
-            </button>
-          </div>
-          <div class="spacer8"></div>
-        </div>
-      </div>
-
-      <div class="fabwrap">
-        <button class="fab" @click="addItem">
-          <i class="fa-solid fa-plus"></i> 新增行程
-        </button>
+        <div class="hint" id="emptyHint">今天尚無行程，按「新增行程」開始。</div>
       </div>
     </div>
 
     <!-- TRANSLATE -->
-    <div v-if="viewMode==='translate'">
-      <div class="card pad">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <div style="font-weight:950;font-size:18px">
-            <i class="fa-solid fa-language" style="color:var(--md-primary)"></i> 翻譯
-          </div>
-          <button class="btn inline tonal" @click="swapLang" style="border-radius:999px">
-            <i class="fa-solid fa-right-left"></i> 交換
-          </button>
+    <div id="viewTranslate" style="display:none">
+      <div class="card">
+        <div class="cardhead">
+          <div class="cardtitle">Google 翻譯（免金鑰）</div>
+          <button class="btn tonal" id="btnSwapLang">⇄ 交換</button>
         </div>
 
-        <div class="spacer16"></div>
-
         <div class="row">
-          <div class="field">
+          <div class="col">
             <label>來源語言</label>
-            <select class="input" v-model="tr.from">
-              <option v-for="l in langs" :key="l.code" :value="l.code">{{ l.label }}</option>
+            <select id="sl">
+              <option value="auto">自動偵測</option>
+              <option value="zh-TW" selected>繁中</option>
+              <option value="en">英文</option>
+              <option value="ja">日文</option>
+              <option value="ko">韓文</option>
+              <option value="th">泰文</option>
+              <option value="vi">越南文</option>
             </select>
           </div>
-          <div class="field">
+          <div class="col">
             <label>目標語言</label>
-            <select class="input" v-model="tr.to">
-              <option v-for="l in langs" :key="l.code" :value="l.code">{{ l.label }}</option>
+            <select id="tl">
+              <option value="en">英文</option>
+              <option value="ja">日文</option>
+              <option value="ko">韓文</option>
+              <option value="th" selected>泰文</option>
+              <option value="vi">越南文</option>
+              <option value="zh-TW">繁中</option>
             </select>
           </div>
         </div>
 
-        <div class="spacer16"></div>
+        <label>輸入文字</label>
+        <textarea id="trText" placeholder="輸入要翻譯的文字..."></textarea>
 
-        <div class="field">
-          <label>輸入文字</label>
-          <textarea class="input" rows="4" v-model="tr.text" placeholder="輸入要翻譯的句子..."></textarea>
+        <div class="chips" style="margin-top:10px">
+          <div class="chip" data-p="請問這裡怎麼去？">請問這裡怎麼去？</div>
+          <div class="chip" data-p="我要點餐，謝謝。">我要點餐，謝謝。</div>
+          <div class="chip" data-p="可以刷卡嗎？">可以刷卡嗎？</div>
+          <div class="chip" data-p="這個多少錢？">這個多少錢？</div>
+          <div class="chip" data-p="我想要一份不辣。">我想要一份不辣。</div>
+          <div class="chip" data-p="請幫我叫計程車。">請幫我叫計程車。</div>
         </div>
 
-        <div class="spacer12"></div>
-
-        <div class="chipsGrid">
-          <span class="chipPhrase" v-for="p in quickPhrases" :key="p" @click="tr.text=p">{{ p }}</span>
+        <div class="row" style="margin-top:12px">
+          <div class="col">
+            <button class="btn primary" id="btnOpenGoogleTr">↗ 用 Google 翻譯開啟</button>
+            <div class="hint">不吃 API、不用金鑰，直接開 Google Translate 網頁並帶入文字。</div>
+          </div>
+          <div class="col">
+            <button class="btn" id="btnCopyTr">⧉ 複製文字</button>
+            <button class="btn danger" id="btnClearTr" style="margin-left:8px">✕ 清空</button>
+          </div>
         </div>
 
-        <div class="spacer16"></div>
-
-        <div class="row">
-          <button class="btn primary" @click="openGoogleTranslate">
-            <i class="fa-brands fa-google"></i> 用 Google 翻譯開啟
-          </button>
-        </div>
-
-        <div class="spacer10"></div>
-
-        <div class="row">
-          <button class="btn tonal" @click="copyText">
-            <i class="fa-regular fa-copy"></i> 複製文字
-          </button>
-          <button class="btn danger" @click="tr.text=''">
-            <i class="fa-solid fa-xmark"></i> 清空
-          </button>
-        </div>
-
-        <div class="spacer12"></div>
-        <div class="tiny muted">
-          你沒有 ChatGPT 金鑰時：最穩的作法就是用 Google Translate「開新頁」翻譯（不吃 API / 不用金鑰），這版就是這樣做。
-        </div>
       </div>
     </div>
 
     <!-- MONEY -->
-    <div v-if="viewMode==='money'">
-      <div class="moneyHero">
-        <div class="rateBox">
-          <div class="tiny small">匯率（{{ setup.currency }}→TWD）</div>
-          <input type="number" step="0.0001" v-model.number="exchangeRate" @change="saveAll" />
-          <div class="tiny" style="opacity:.9">
-            更新：{{ fxLastUpdated || '未更新' }}
+    <div id="viewMoney" style="display:none">
+      <div class="card">
+        <div class="cardhead">
+          <div class="cardtitle">總支出</div>
+          <button class="btn tonal" id="btnRefreshFx">⟳ 刷新匯率</button>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="hint" id="fxInfo">匯率：未更新</div>
+            <div style="font-size:46px; font-weight: 1000; letter-spacing: .5px" id="totalFx">0</div>
+            <div style="font-size:18px; font-weight: 900; color: var(--muted)" id="totalTwd">≈ NT$ 0</div>
           </div>
-        </div>
-
-        <div class="small">總支出 Total</div>
-        <div class="big">{{ setup.currency }} {{ totalExpense.toLocaleString() }}</div>
-        <div class="small" style="margin-top:8px">≈ NT$ {{ Math.round(totalExpense * exchangeRate).toLocaleString() }}</div>
-      </div>
-
-      <div class="spacer12"></div>
-
-      <div class="card pad">
-        <div style="font-weight:950">每日支出</div>
-        <div class="spacer12"></div>
-        <div v-for="(amt, idx) in dailyTotals" :key="idx" class="listrow" style="margin-bottom:10px">
-          <div style="font-weight:950">D{{ idx+1 }} <span class="tiny muted">（{{ days[idx]?.shortDate || '' }}）</span></div>
-          <div style="font-weight:950">{{ setup.currency }} {{ amt.toLocaleString() }}</div>
-        </div>
-      </div>
-
-      <div class="spacer12"></div>
-
-      <div class="card pad">
-        <div style="font-weight:950;margin-bottom:10px">新增支出</div>
-        <div class="row">
-          <input class="input" v-model="newExpense.item" placeholder="項目" />
-          <input class="input" type="number" v-model.number="newExpense.amount" placeholder="金額" />
-        </div>
-        <div class="spacer12"></div>
-        <div class="row">
-          <select class="input" v-model.number="newExpense.dayIdx">
-            <option v-for="(d, idx) in days" :key="d.fullDate" :value="idx">D{{ idx+1 }}（{{ d.shortDate }}）</option>
-          </select>
-          <button class="btn primary" @click="addExpense">+ 加入</button>
-        </div>
-      </div>
-
-      <div class="spacer12"></div>
-
-      <div class="card pad">
-        <div style="font-weight:950;margin-bottom:10px">明細</div>
-        <div v-if="expenses.length===0" class="tiny muted">尚無支出。</div>
-        <div v-else>
-          <div class="listrow" v-for="(e,i) in expenses" :key="e.id" style="margin-bottom:10px">
-            <div style="min-width:0">
-              <div style="font-weight:950">{{ e.item }}</div>
-              <div class="tiny muted">D{{ (e.dayIdx??0)+1 }}</div>
+          <div class="col">
+            <label>新增支出</label>
+            <div class="row">
+              <div class="col" style="min-width: 150px">
+                <select id="expDay"></select>
+              </div>
+              <div class="col">
+                <input id="expItem" placeholder="項目（例如：晚餐）" />
+              </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="font-weight:950">{{ setup.currency }} {{ Number(e.amount||0).toLocaleString() }}</div>
-              <button class="chip small" style="border-color:#FECACA;background:#FEE2E2;color:#B91C1C" @click="removeExpense(i)">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
+            <div class="row">
+              <div class="col">
+                <input id="expAmt" inputmode="decimal" placeholder="金額（行程幣別）" />
+              </div>
+              <div class="col" style="display:flex; align-items:flex-end">
+                <button class="btn primary" id="btnAddExp" style="width:100%">＋ 加入</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="spacer12"></div>
-        <button class="btn tonal" @click="refreshFX(true)">
-          <i class="fa-solid fa-rotate"></i> 立刻刷新匯率（預設每天只更新一次）
-        </button>
+        <div class="hr"></div>
+
+        <div class="cardtitle" style="margin-bottom:8px">每日支出</div>
+        <div id="dailyExp"></div>
+
+        <div class="hr"></div>
+
+        <div class="cardtitle" style="margin-bottom:8px">明細</div>
+        <div id="expList"></div>
+        <div class="hint" id="noExpHint">尚無支出。</div>
       </div>
     </div>
+
   </div>
-
-  <!-- Wheel modal -->
-  <div class="overlay" v-if="wheel.show" @click.self="closeWheel">
-    <div class="sheet">
-      <div class="sheetHeader">
-        <div>
-          <div class="h">{{ wheelTitle }}</div>
-          <div class="tiny muted">滑動選擇後按「確認」</div>
-        </div>
-        <button class="btn inline primary" style="width:auto" @click="saveWheel">確認</button>
-      </div>
-
-      <div v-if="wheel.mode==='transit'" class="spacer12"></div>
-      <div v-if="wheel.mode==='transit'" class="row">
-        <button class="btn tonal" :class="{'primary': wheel.transMode==='walk'}" @click="wheel.transMode='walk'">
-          <i class="fa-solid fa-person-walking"></i> 步行
-        </button>
-        <button class="btn tonal" :class="{'primary': wheel.transMode==='drive'}" @click="wheel.transMode='drive'">
-          <i class="fa-solid fa-car"></i> 開車
-        </button>
-        <button class="btn tonal" :class="{'primary': wheel.transMode==='transit'}" @click="wheel.transMode='transit'">
-          <i class="fa-solid fa-train-subway"></i> 大眾
-        </button>
-      </div>
-
-      <div class="wheel">
-        <div class="hl"></div>
-
-        <div class="wheelcol" ref="wheelA" @scroll="onScroll('a')">
-          <div class="wheelitem" v-for="v in listA" :key="v" :class="{sel: wheel.a===v}">{{ v }}</div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:center;width:22px;font-weight:950;color:#94A3B8">
-          {{ wheel.mode==='time' ? ':' : 'h' }}
-        </div>
-
-        <div class="wheelcol" ref="wheelB" @scroll="onScroll('b')">
-          <div class="wheelitem" v-for="v in listB" :key="v" :class="{sel: wheel.b===v}">{{ v }}</div>
-        </div>
-
-        <div v-if="wheel.mode!=='time'" style="display:flex;align-items:center;justify-content:center;width:22px;font-weight:950;color:#94A3B8">
-          m
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" v-if="toast">{{ toast }}</div>
 </div>
 
+<!-- Setup / Add Item Sheet -->
+<div class="backdrop" id="modal">
+  <div class="sheet" id="sheet">
+    <div class="sheetHead">
+      <div class="sheetTitle" id="sheetTitle">建立行程</div>
+      <button class="btn small" id="btnCloseModal">關閉</button>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const { createApp, ref, reactive, computed, watch, nextTick, onMounted } = Vue;
+(() => {
+  /* ========= Storage Keys ========= */
+  const K = {
+    setup: 'tp_setup_v2',
+    days: 'tp_days_v2',
+    exp: 'tp_exp_v2',
+    fx: 'tp_fx_v2'
+  };
 
-createApp({
-  setup(){
-    const STORAGE_KEY = 'tp_pwa_data_v2';
-    const hasStarted = ref(false);
-    const viewMode = ref('plan');
-    const currentDayIdx = ref(0);
+  /* ========= Default Setup (only used if user confirms) ========= */
+  const DEFAULT_SETUP = {
+    tripName: 'Travel Plan',
+    country: '',
+    destination: '',
+    startDate: '',
+    endDate: '',
+    currency: 'NZD'
+  };
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const setup = reactive({
-      destination: '',
-      startDate: todayStr,
-      endDate: todayStr,
-      currency: 'JPY'
-    });
+  /* ========= State ========= */
+  let setup = loadJSON(K.setup, null);
+  let days = loadJSON(K.days, null);       // [{dateISO, short, items:[]}]
+  let exp = loadJSON(K.exp, []);           // [{id, dayIdx, item, amount}]
+  let fx = loadJSON(K.fx, { rate: 0, lastDate: '' }); // currency->TWD
+  let curDay = 0;
+  let tab = 'plan';
+  let autoPush = loadJSON('tp_autoPush', true);
+  let showRoutes = loadJSON('tp_showRoutes', true);
 
-    const days = ref([]);
-    const totalDays = ref(0);
+  /* ========= DOM ========= */
+  const el = (id) => document.getElementById(id);
+  const toastEl = el('toast');
+  const modal = el('modal');
+  const sheetTitle = el('sheetTitle');
+  const sheetBody = el('sheetBody');
 
-    // destination search
-    const searchQuery = ref('');
-    const suggestions = ref([]);
-    const detectedCountry = ref('');
-    const isSearching = ref(false);
-    let debounceTimer = null;
+  /* Top buttons */
+  el('btnReset').onclick = () => openResetSheet();
+  el('btnTabPlan').onclick = () => setTab('plan');
+  el('btnTabTranslate').onclick = () => setTab('translate');
+  el('btnTabMoney').onclick = () => setTab('money');
 
-    const countryCurrencyMap = {
-      'tw': 'TWD', 'jp': 'JPY', 'kr': 'KRW', 'cn': 'CNY', 'hk': 'HKD', 'th': 'THB', 'vn': 'VND',
-      'sg': 'SGD', 'my': 'MYR', 'ph': 'PHP', 'id': 'IDR', 'us': 'USD', 'ca': 'CAD', 'au': 'AUD',
-      'nz': 'NZD', 'gb': 'GBP', 'ch': 'CHF',
-      'fr': 'EUR', 'de': 'EUR', 'it': 'EUR', 'es': 'EUR', 'pt': 'EUR', 'nl': 'EUR', 'be': 'EUR',
-      'at': 'EUR', 'gr': 'EUR', 'fi': 'EUR', 'ie': 'EUR'
+  /* Tabs */
+  el('tabPlan').onclick = () => setTab('plan');
+  el('tabTranslate').onclick = () => setTab('translate');
+  el('tabMoney').onclick = () => setTab('money');
+
+  el('btnAddItem').onclick = () => openAddItemSheet();
+  el('btnCloseModal').onclick = closeModal;
+
+  el('toggleAutoPush').checked = !!autoPush;
+  el('toggleAutoPush').onchange = (e) => {
+    autoPush = e.target.checked;
+    saveJSON('tp_autoPush', autoPush);
+    toast(autoPush ? '已開啟自動推移' : '已關閉自動推移');
+  };
+  el('toggleShowRoutes').checked = !!showRoutes;
+  el('toggleShowRoutes').onchange = (e) => {
+    showRoutes = e.target.checked;
+    saveJSON('tp_showRoutes', showRoutes);
+    render();
+  };
+
+  /* Translate */
+  document.querySelectorAll('.chip[data-p]').forEach(ch => {
+    ch.onclick = () => {
+      el('trText').value = ch.dataset.p || '';
+      toast('已帶入常用句');
+    };
+  });
+  el('btnSwapLang').onclick = () => {
+    const a = el('sl').value, b = el('tl').value;
+    el('sl').value = b; el('tl').value = a;
+  };
+  el('btnOpenGoogleTr').onclick = () => {
+    const sl = el('sl').value;
+    const tl = el('tl').value;
+    const text = (el('trText').value || '').trim();
+    if (!text) return toast('請先輸入文字');
+    const url = 'https://translate.google.com/?sl=' + encodeURIComponent(sl) +
+                '&tl=' + encodeURIComponent(tl) +
+                '&text=' + encodeURIComponent(text) + '&op=translate';
+    window.open(url, '_blank');
+  };
+  el('btnCopyTr').onclick = async () => {
+    const t = el('trText').value || '';
+    if (!t) return toast('沒有文字可複製');
+    try {
+      await navigator.clipboard.writeText(t);
+      toast('已複製');
+    } catch {
+      toast('複製失敗（可長按手動複製）');
+    }
+  };
+  el('btnClearTr').onclick = () => el('trText').value = '';
+
+  /* Money */
+  el('btnAddExp').onclick = () => {
+    if (!ensureSetup()) return;
+    const dayIdx = parseInt(el('expDay').value, 10);
+    const item = (el('expItem').value || '').trim();
+    const amount = Number(el('expAmt').value || 0);
+    if (!item) return toast('請輸入項目');
+    if (!isFinite(amount) || amount <= 0) return toast('金額不正確');
+    exp.unshift({ id: uid(), dayIdx, item, amount });
+    saveJSON(K.exp, exp);
+    el('expItem').value = '';
+    el('expAmt').value = '';
+    renderMoney();
+    toast('已加入支出');
+  };
+  el('btnRefreshFx').onclick = () => refreshFx(true);
+
+  /* ========= Init ========= */
+  registerSW();
+  if (!ensureSetup()) {
+    // first-run onboarding
+    openSetupSheet();
+  } else {
+    // load / build days if missing
+    if (!days || !Array.isArray(days) || days.length === 0) {
+      buildDaysFromSetup();
+      saveAll();
+    }
+    // daily FX refresh
+    refreshFx(false);
+    render();
+  }
+
+  /* ========= Functions ========= */
+  function setTab(next){
+    tab = next;
+    el('tabPlan').classList.toggle('active', tab==='plan');
+    el('tabTranslate').classList.toggle('active', tab==='translate');
+    el('tabMoney').classList.toggle('active', tab==='money');
+    el('viewPlan').style.display = tab==='plan' ? '' : 'none';
+    el('viewTranslate').style.display = tab==='translate' ? '' : 'none';
+    el('viewMoney').style.display = tab==='money' ? '' : 'none';
+
+    if (tab==='money') renderMoney();
+  }
+
+  function ensureSetup(){
+    return setup && setup.startDate && setup.endDate;
+  }
+
+  function openSetupSheet(){
+    sheetTitle.textContent = '建立行程（先選國家）';
+    sheetBody.innerHTML = `
+      <div class="hint">你看到「直接跳到已經輸好地點/時間」通常是因為手機記住了上次資料。這裡改成：首次啟動先做建立行程。</div>
+
+      <label>行程名稱</label>
+      <input id="s_tripName" placeholder="例如：皇后鎮 / 大阪 / 曼谷" value="${escapeHTML((setup?.tripName)||DEFAULT_SETUP.tripName)}"/>
+
+      <label>國家（先選）</label>
+      <select id="s_country">
+        ${countryOptions(setup?.country || '')}
+      </select>
+      <div class="hint">你想要「先選國家」：就從這裡開始。之後你再輸入城市/景點，程式也能用定位結果輔助。</div>
+
+      <label>主要城市 / 地區（可先空著）</label>
+      <input id="s_dest" placeholder="例如：Queenstown / Osaka / Bangkok" value="${escapeHTML((setup?.destination)||'')}"/>
+
+      <div class="row">
+        <div class="col">
+          <label>開始日期</label>
+          <input id="s_start" type="date" value="${escapeHTML((setup?.startDate)||'')}"/>
+        </div>
+        <div class="col">
+          <label>結束日期</label>
+          <input id="s_end" type="date" value="${escapeHTML((setup?.endDate)||'')}"/>
+        </div>
+      </div>
+
+      <label>幣別</label>
+      <select id="s_currency">
+        ${currencyOptions(setup?.currency || guessCurrencyFromCountry(setup?.country || ''))}
+      </select>
+
+      <div class="row" style="margin-top:12px">
+        <div class="col">
+          <button class="btn primary" id="btnCreateTrip">建立行程</button>
+        </div>
+        <div class="col">
+          <button class="btn danger" id="btnWipeAll">清除所有資料（含快取提示）</button>
+        </div>
+      </div>
+
+      <div class="hint">
+        免金鑰定位：OpenStreetMap Nominatim；路線時間：以座標距離估算（步行/開車/大眾），並提供 Google Maps 開啟。
+      </div>
+    `;
+    openModal();
+
+    el('btnCreateTrip').onclick = () => {
+      const tripName = (el('s_tripName').value || '').trim() || 'Travel Plan';
+      const country = el('s_country').value || '';
+      const destination = (el('s_dest').value || '').trim();
+      const startDate = el('s_start').value || '';
+      const endDate = el('s_end').value || '';
+      const currency = el('s_currency').value || 'NZD';
+      if (!startDate || !endDate) return toast('請選開始/結束日期');
+      if (endDate < startDate) return toast('結束日期不能早於開始日期');
+
+      setup = { tripName, country, destination, startDate, endDate, currency };
+      buildDaysFromSetup(true);
+      saveAll();
+      closeModal();
+      refreshFx(true);
+      render();
+      toast('行程已建立');
     };
 
-    // categories
-    const categories = [
-      { key:'food', label:'美食', icon:'fa-utensils' },
-      { key:'shopping', label:'購物', icon:'fa-bag-shopping' },
-      { key:'hotel', label:'住宿', icon:'fa-hotel' },
-      { key:'fun', label:'遊樂', icon:'fa-ticket' },
-      { key:'transport', label:'交通', icon:'fa-bus' },
-      { key:'spot', label:'景點', icon:'fa-mountain-sun' },
-    ];
-
-    // flights store at trip-level
-    const flights = ref([]); // {id, departDayIdx, arriveDayIdx, departTime, arriveTime, departAirport, arriveAirport, flightNo, arrivalOffset, durationMin}
-
-    // itinerary items
-    const makeItem = () => ({
-      id: crypto.randomUUID(),
-      time: '',
-      activity: '',
-      location: '',
-      geo: null, // {lat, lon, display}
-      category: 'spot',
-      stayMin: 60,
-      locked: false,
-      toNext: { mode:'drive', min: 30 },
-      route: null // {walkMin, driveMin}
-    });
-
-    // Money
-    const expenses = ref([]); // {id, item, amount, dayIdx}
-    const newExpense = reactive({ item:'', amount:'', dayIdx:0 });
-    const exchangeRate = ref(1); // TWD per currency
-    const fxLastUpdated = ref('');
-    const FX_CACHE_KEY = 'tp_fx_cache_v1';
-
-    // translate
-    const langs = [
-      { code:'zh-TW', label:'繁中' },
-      { code:'en', label:'英文' },
-      { code:'ja', label:'日文' },
-      { code:'ko', label:'韓文' },
-      { code:'th', label:'泰文' },
-      { code:'vi', label:'越南文' },
-      { code:'fr', label:'法文' },
-      { code:'de', label:'德文' },
-      { code:'es', label:'西文' },
-      { code:'it', label:'義大利文' },
-    ];
-    const tr = reactive({ from:'zh-TW', to:'en', text:'' });
-    const quickPhrases = [
-      '請問這裡怎麼去？',
-      '我要點餐，謝謝。',
-      '可以刷卡嗎？',
-      '這個多少錢？',
-      '我想要一份不辣。',
-      '請幫我叫計程車。'
-    ];
-
-    // toast
-    const toast = ref('');
-    let toastTimer = null;
-    const showToast = (msg) => {
-      toast.value = msg;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>toast.value='', 1800);
+    el('s_country').onchange = () => {
+      const c = el('s_country').value;
+      const guess = guessCurrencyFromCountry(c);
+      const curSel = el('s_currency');
+      if (guess && curSel && !setup?.currency) curSel.value = guess;
+      // 即使已有設定，也跟著更新預設（更直覺）
+      if (guess) curSel.value = guess;
     };
 
-    // SW status
-    const swStatus = ref('未註冊');
-    const forceReload = () => location.reload(true);
+    el('btnWipeAll').onclick = () => openResetSheet(true);
+  }
 
-    // helpers
-    const fmtDate = (s) => (s||'').replaceAll('-','/');
-    const minsToHM = (m) => {
-      m = Math.max(0, Math.round(Number(m||0)));
-      const h = Math.floor(m/60);
-      const mm = m%60;
-      if(h<=0) return `${mm}m`;
-      return `${h}h ${mm.toString().padStart(2,'0')}m`;
-    };
-    const pad2 = (n) => String(n).padStart(2,'0');
-    const parseTimeToMin = (t) => {
-      if(!t || !t.includes(':')) return null;
-      const [h,m]=t.split(':').map(Number);
-      if(Number.isNaN(h)||Number.isNaN(m)) return null;
-      return h*60+m;
-    };
-    const minToTime = (m) => {
-      m = ((m%1440)+1440)%1440;
-      const h = Math.floor(m/60);
-      const mm = m%60;
-      return `${pad2(h)}:${pad2(mm)}`;
-    };
+  function openResetSheet(fromSetup=false){
+    sheetTitle.textContent = '新行程 / 重置';
+    sheetBody.innerHTML = `
+      <div class="hint">
+        如果你發現「一直載入舊畫面」或「跳回舊資料」，通常是 SW 快取 + localStorage。
+        這裡一鍵清掉本機資料，回到「先選國家」。
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div class="col">
+          <button class="btn danger" id="btnResetHard">清除本機資料（行程/花費/設定）</button>
+          <div class="hint">會清 localStorage（不會動 GitHub 上的檔案）。</div>
+        </div>
+        <div class="col">
+          <button class="btn tonal" id="btnSWHelp">我已清資料，但畫面仍舊（SW 快取）</button>
+          <div class="hint">會教你用 iPhone 快速清掉此網站資料。</div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <button class="btn" id="btnGoSetup">回到建立行程（先選國家）</button>
+    `;
+    openModal();
 
-    // computed
-    const currentDay = computed(() => days.value[currentDayIdx.value] || { title:'', date:'', items:[] });
-
-    const currentDayFlights = computed(() => {
-      const idx = currentDayIdx.value;
-      return flights.value
-        .filter(f => f.departDayIdx===idx || f.arriveDayIdx===idx)
-        .sort((a,b)=> (a.departDayIdx-b.departDayIdx) || (parseTimeToMin(a.departTime||'')??0) - (parseTimeToMin(b.departTime||'')??0));
-    });
-
-    const totalExpense = computed(() => expenses.value.reduce((s,e)=> s + Number(e.amount||0), 0));
-    const dailyTotals = computed(() => {
-      const arr = Array.from({length: days.value.length}, ()=>0);
-      for(const e of expenses.value){
-        const di = Number(e.dayIdx??0);
-        if(arr[di]!=null) arr[di] += Number(e.amount||0);
-      }
-      return arr;
-    });
-
-    // persistence
-    const saveAll = () => {
-      const payload = {
-        hasStarted: hasStarted.value,
-        viewMode: viewMode.value,
-        currentDayIdx: currentDayIdx.value,
-        setup: {...setup},
-        days: days.value,
-        flights: flights.value,
-        expenses: expenses.value,
-        exchangeRate: exchangeRate.value,
-        fxLastUpdated: fxLastUpdated.value,
-        tr: {...tr}
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    };
-
-    const loadAll = () => {
+    el('btnResetHard').onclick = async () => {
+      // clear app data
+      [K.setup, K.days, K.exp, K.fx, 'tp_autoPush', 'tp_showRoutes'].forEach(k => localStorage.removeItem(k));
+      setup = null; days = null; exp = []; fx = {rate:0,lastDate:''}; curDay=0;
+      toast('已清除本機資料');
+      // try clear caches too
       try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return;
-        const d = JSON.parse(raw);
-        if(d.setup){
-          Object.assign(setup, d.setup);
-          searchQuery.value = d.setup.destination || '';
-        }
-        if(Array.isArray(d.days)) days.value = d.days;
-        if(Array.isArray(d.flights)) flights.value = d.flights;
-        if(Array.isArray(d.expenses)) expenses.value = d.expenses;
-        if(typeof d.exchangeRate === 'number') exchangeRate.value = d.exchangeRate;
-        if(d.fxLastUpdated) fxLastUpdated.value = d.fxLastUpdated;
-        if(d.tr) Object.assign(tr, d.tr);
-        hasStarted.value = !!d.hasStarted;
-        viewMode.value = d.viewMode || 'plan';
-        currentDayIdx.value = Math.min(d.currentDayIdx||0, (days.value.length||1)-1);
-        totalDays.value = days.value.length || 0;
-      }catch(_){}
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }catch{}
+      closeModal();
+      openSetupSheet();
     };
 
-    watch([() => setup.destination, () => setup.startDate, () => setup.endDate, () => setup.currency], saveAll);
-    watch(days, saveAll, {deep:true});
-    watch(flights, saveAll, {deep:true});
-    watch(expenses, saveAll, {deep:true});
-    watch(exchangeRate, saveAll);
-
-    // init trip
-    const initTrip = () => {
-      if(!setup.destination) return alert('請先選擇目的地');
-      const start = new Date(setup.startDate);
-      const end = new Date(setup.endDate);
-      if(end < start) return alert('回程日期不能早於去程日期');
-
-      const diff = Math.round((end-start)/(1000*60*60*24));
-      totalDays.value = diff + 1;
-
-      const weekDays = ['日','一','二','三','四','五','六'];
-      days.value = [];
-      let d = new Date(start);
-      for(let i=0;i<totalDays.value;i++){
-        const mm = d.getMonth()+1, dd=d.getDate();
-        days.value.push({
-          title:'',
-          shortDate: `${mm}/${dd}`,
-          date: `${mm}/${dd} (${weekDays[d.getDay()]})`,
-          fullDate: d.toISOString().split('T')[0],
-          items: []
-        });
-        d.setDate(d.getDate()+1);
-      }
-
-      // default item
-      days.value[0].items.push(makeItem());
-      currentDayIdx.value = 0;
-      hasStarted.value = true;
-
-      // ensure expense dayIdx valid
-      newExpense.dayIdx = 0;
-
-      // refresh FX daily
-      refreshFX(false);
-
-      saveAll();
+    el('btnSWHelp').onclick = () => {
+      toast('iPhone：設定→Safari→進階→網站資料→搜尋 f0620123-png.github.io →刪除');
     };
 
-    const addDay = () => {
-      if(!days.value.length) return;
-      const last = new Date(days.value[days.value.length-1].fullDate);
-      last.setDate(last.getDate()+1);
-      const weekDays=['日','一','二','三','四','五','六'];
-      days.value.push({
-        title:'',
-        shortDate:`${last.getMonth()+1}/${last.getDate()}`,
-        date:`${last.getMonth()+1}/${last.getDate()} (${weekDays[last.getDay()]})`,
-        fullDate:last.toISOString().split('T')[0],
-        items:[]
-      });
-      setup.endDate = last.toISOString().split('T')[0];
-      totalDays.value++;
-      currentDayIdx.value = days.value.length-1;
-      saveAll();
+    el('btnGoSetup').onclick = () => {
+      closeModal();
+      openSetupSheet();
     };
 
-    const goBack = () => {
-      if(confirm('返回初始化頁？（資料會保留在本機）')){
-        hasStarted.value = false;
-        viewMode.value = 'plan';
-        saveAll();
-      }
-    };
+    if (!fromSetup) openModal();
+  }
 
-    // destination search
-    const debounceSearch = () => {
-      clearTimeout(debounceTimer);
-      suggestions.value = [];
-      if(!searchQuery.value){ return; }
-      isSearching.value = true;
-      debounceTimer = setTimeout(async ()=>{
-        try{
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery.value)}&addressdetails=1&limit=6`);
-          const data = await res.json();
-          suggestions.value = Array.isArray(data)?data:[];
-        }catch(_){
-        }finally{
-          isSearching.value = false;
-        }
-      }, 500);
-    };
+  function openAddItemSheet(){
+    if (!ensureSetup()) return openSetupSheet();
 
-    const selectLocation = (item) => {
-      const cityName = item.display_name.split(',')[0];
-      setup.destination = cityName;
-      searchQuery.value = cityName;
+    const d = days[curDay];
+    sheetTitle.textContent = `新增行程（D${curDay+1} ${d.short}）`;
+    sheetBody.innerHTML = `
+      <label>開始時間（可先空著，交給自動推移）</label>
+      <input id="i_time" placeholder="例如：09:30" inputmode="numeric"/>
 
-      const cc = item?.address?.country_code;
-      const countryName = item?.address?.country;
-      if(cc && countryCurrencyMap[cc]){
-        setup.currency = countryCurrencyMap[cc];
-        detectedCountry.value = `${countryName} (${setup.currency})`;
-      }else{
-        detectedCountry.value = '';
-      }
-      suggestions.value = [];
-      saveAll();
-    };
+      <label>行程名稱</label>
+      <input id="i_title" placeholder="例如：空中纜車 / 午餐 / Check in" />
 
-    // flights
-    const addFlightSegment = () => {
-      const id = crypto.randomUUID();
-      const departDayIdx = currentDayIdx.value;
-      const seg = {
-        id,
-        departDayIdx,
-        arriveDayIdx: departDayIdx,
-        departTime: '09:00',
-        arriveTime: '13:00',
-        departAirport: 'TPE',
-        arriveAirport: 'NRT',
-        flightNo: 'BR198',
-        arrivalOffset: '0',
-        durationMin: 240
+      <label>地點（輸入店名/景點，按「定位」）</label>
+      <div class="row">
+        <div class="col">
+          <input id="i_place" placeholder="例如：Fergburger / Blue Peaks Lodge" />
+        </div>
+        <div class="col" style="min-width:160px; display:flex; gap:10px; align-items:flex-end">
+          <button class="btn tonal" id="btnGeocode">📍 定位</button>
+          <button class="btn" id="btnClearGeo">清除定位</button>
+        </div>
+      </div>
+      <div id="geoResult" class="hint"></div>
+      <div id="geoList"></div>
+
+      <label>分類（膠囊選擇）</label>
+      <div class="chips" id="catChips"></div>
+
+      <div class="row">
+        <div class="col">
+          <label>停留時間</label>
+          <div class="row">
+            <div class="col"><input id="i_stay_h" inputmode="numeric" placeholder="h" value="1"></div>
+            <div class="col"><input id="i_stay_m" inputmode="numeric" placeholder="m" value="0"></div>
+          </div>
+        </div>
+        <div class="col">
+          <label>前往下一個（交通時間）</label>
+          <div class="row">
+            <div class="col">
+              <select id="i_mode">
+                <option value="walk">步行</option>
+                <option value="drive">開車</option>
+                <option value="transit">大眾</option>
+              </select>
+            </div>
+            <div class="col"><input id="i_toNext" inputmode="numeric" placeholder="分鐘" value="20"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <div class="col">
+          <div class="switch">
+            <input type="checkbox" id="i_lock" />
+            <span>鎖定時間</span>
+          </div>
+          <div class="hint">有些行程（例如預約）不希望被推移，就把這筆鎖定。</div>
+        </div>
+        <div class="col" style="display:flex; align-items:flex-end">
+          <button class="btn primary" id="btnSaveItem" style="width:100%">加入</button>
+        </div>
+      </div>
+    `;
+    openModal();
+
+    // category chips
+    const cats = [
+      {key:'food', label:'美食'},
+      {key:'shop', label:'購物'},
+      {key:'stay', label:'住宿'},
+      {key:'fun', label:'遊樂'},
+      {key:'transport', label:'交通'},
+      {key:'spot', label:'景點'}
+    ];
+    const catWrap = el('catChips');
+    let selCat = 'spot';
+    catWrap.innerHTML = cats.map(c => `<div class="chip ${c.key===selCat?'active':''}" data-k="${c.key}">${c.label}</div>`).join('');
+    catWrap.querySelectorAll('.chip').forEach(ch => {
+      ch.onclick = () => {
+        selCat = ch.dataset.k;
+        catWrap.querySelectorAll('.chip').forEach(x => x.classList.toggle('active', x.dataset.k===selCat));
       };
-      // compute duration
-      seg.durationMin = computeFlightDuration(seg);
-      flights.value.push(seg);
-      saveAll();
-      openFlightEditor(id);
-    };
-
-    const computeFlightDuration = (seg) => {
-      const s = parseTimeToMin(seg.departTime);
-      const e = parseTimeToMin(seg.arriveTime);
-      if(s==null || e==null) return seg.durationMin || 0;
-      let dur = e - s;
-      if(seg.arrivalOffset==='1') dur += 1440;
-      if(dur < 0) dur += 1440;
-      return Math.max(0, dur);
-    };
-
-    const openFlightEditor = (id) => {
-      const seg = flights.value.find(x=>x.id===id);
-      if(!seg) return;
-      const input = prompt(
-`編輯航班（用 | 分隔）：
-格式：起飛時間|起飛場|抵達時間|抵達場|航班號|+1(0/1)
-
-例如：12:25|TPE|14:20|NRT|BR198|1`,
-`${seg.departTime}|${seg.departAirport}|${seg.arriveTime}|${seg.arriveAirport}|${seg.flightNo}|${seg.arrivalOffset}`
-      );
-      if(!input) return;
-      const parts = input.split('|').map(s=>s.trim());
-      if(parts.length < 6) return alert('格式不對');
-      seg.departTime = parts[0] || seg.departTime;
-      seg.departAirport = (parts[1]||'').toUpperCase();
-      seg.arriveTime = parts[2] || seg.arriveTime;
-      seg.arriveAirport = (parts[3]||'').toUpperCase();
-      seg.flightNo = (parts[4]||'').toUpperCase();
-      seg.arrivalOffset = (parts[5]==='1')?'1':'0';
-
-      // day move
-      seg.departDayIdx = currentDayIdx.value;
-      seg.arriveDayIdx = currentDayIdx.value + (seg.arrivalOffset==='1'?1:0);
-
-      // clamp
-      if(seg.arriveDayIdx >= days.value.length) seg.arriveDayIdx = days.value.length-1;
-
-      seg.durationMin = computeFlightDuration(seg);
-      saveAll();
-      showToast('已更新航班');
-    };
-
-    const removeFlight = (id) => {
-      if(!confirm('刪除這段航班？')) return;
-      flights.value = flights.value.filter(f=>f.id!==id);
-      saveAll();
-    };
-
-    // itinerary
-    const addItem = () => {
-      currentDay.value.items.push(makeItem());
-      // default time: if last exists, set after it (stay+toNext)
-      autoReschedule(currentDayIdx.value);
-      saveAll();
-    };
-
-    const removeItem = (idx) => {
-      currentDay.value.items.splice(idx,1);
-      autoReschedule(currentDayIdx.value);
-      saveAll();
-    };
-
-    const getTransIcon = (mode) => {
-      return ({
-        walk:'fa-person-walking',
-        drive:'fa-car',
-        transit:'fa-train-subway'
-      }[mode] || 'fa-car');
-    };
-    const transLabel = (toNext) => {
-      const modeMap = { walk:'步行', drive:'開車', transit:'大眾' };
-      const m = Number(toNext?.min||0);
-      return `${modeMap[toNext?.mode]||'交通'} · ${m}min`;
-    };
-
-    // auto schedule (stay + transit)
-    const autoReschedule = (dayIdx) => {
-      const d = days.value[dayIdx];
-      if(!d || !Array.isArray(d.items) || d.items.length===0) return;
-
-      // if no start time, set first to 09:00
-      if(!d.items[0].time) d.items[0].time = '09:00';
-
-      // order by current order (do not reorder categories)
-      let cursor = parseTimeToMin(d.items[0].time) ?? 540;
-
-      for(let i=0;i<d.items.length;i++){
-        const it = d.items[i];
-
-        if(it.locked && it.time){
-          const t = parseTimeToMin(it.time);
-          if(t!=null) cursor = t; // anchor to locked
-        }else{
-          it.time = minToTime(cursor);
-        }
-
-        const stay = Number(it.stayMin||0);
-        cursor += stay;
-
-        // transit to next
-        if(i < d.items.length-1){
-          const tm = Number(it.toNext?.min||0);
-          cursor += tm;
-        }
-      }
-      saveAll();
-    };
+    });
 
     // geocoding
-    const geocodeItem = async (idx) => {
-      const it = currentDay.value.items[idx];
-      if(!it || !it.location) return;
-      try{
-        const q = `${it.location} ${setup.destination}`.trim();
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
-        const data = await res.json();
-        if(data && data[0]){
-          it.geo = { lat:Number(data[0].lat), lon:Number(data[0].lon), display:data[0].display_name };
-          showToast('定位完成');
-          saveAll();
-        }else{
-          alert('找不到定位，換個關鍵字（店名+城市）');
-        }
-      }catch(_){
-        alert('定位失敗（網路或服務限制）');
+    let pickedGeo = null;
+    el('btnGeocode').onclick = async () => {
+      const q = (el('i_place').value || '').trim();
+      if (!q) return toast('請先輸入地點');
+      el('geoResult').textContent = '搜尋中...';
+      const list = await nominatimSearch(q);
+      if (!list.length){
+        el('geoResult').textContent = '找不到結果（可換英文/更完整地址）';
+        el('geoList').innerHTML = '';
+        return;
       }
-    };
-    const autoGeocode = (idx) => {
-      const it = currentDay.value.items[idx];
-      if(!it) return;
-      if(it.geo && it.geo.display) return; // already
-      if((it.location||'').length < 3) return;
-      // auto but quiet
-      geocodeItem(idx);
-    };
-
-    // route calc via OSRM (walk/driving)
-    const osrm = async (profile, a, b) => {
-      const url = `https://router.project-osrm.org/route/v1/${profile}/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`;
-      const res = await fetch(url);
-      const j = await res.json();
-      const sec = j?.routes?.[0]?.duration;
-      if(!sec && sec!==0) return null;
-      return Math.max(1, Math.round(sec/60));
-    };
-
-    const calcRoutes = async (idx) => {
-      const a = currentDay.value.items[idx];
-      const b = currentDay.value.items[idx+1];
-      if(!a?.geo || !b?.geo) return alert('兩個點都要先「已定位」才能算路線');
-
-      a.route = a.route || {};
-      showToast('計算路線中...');
-      try{
-        const walk = await osrm('walking', a.geo, b.geo);
-        const drive = await osrm('driving', a.geo, b.geo);
-        a.route.walkMin = walk;
-        a.route.driveMin = drive;
-        saveAll();
-        showToast('路線已更新');
-      }catch(_){
-        alert('路線計算失敗（OSRM服務或網路問題）');
-      }
-    };
-
-    const openGoogleDirections = (idx) => {
-      const a = currentDay.value.items[idx];
-      const b = currentDay.value.items[idx+1];
-      if(!a || !b) return;
-      const origin = a.geo ? `${a.geo.lat},${a.geo.lon}` : encodeURIComponent(a.location||'');
-      const dest = b.geo ? `${b.geo.lat},${b.geo.lon}` : encodeURIComponent(b.location||'');
-      const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=transit`;
-      window.open(url, '_blank');
-    };
-
-    // wheel modal
-    const wheel = reactive({
-      show:false,
-      mode:'time', // time | stay | transit
-      idx:null,
-      a:'09',
-      b:'00',
-      transMode:'drive'
-    });
-    const wheelA = ref(null);
-    const wheelB = ref(null);
-
-    const wheelTitle = computed(() => {
-      if(wheel.mode==='time') return '設定開始時間';
-      if(wheel.mode==='stay') return '設定停留時間';
-      return '設定交通時間';
-    });
-
-    const listA = computed(() => {
-      if(wheel.mode==='time') return Array.from({length:24},(_,i)=>pad2(i));
-      // duration hours
-      return Array.from({length:10},(_,i)=>pad2(i));
-    });
-    const listB = computed(() => {
-      if(wheel.mode==='time') return Array.from({length:12},(_,i)=>pad2(i*5));
-      // minutes
-      return Array.from({length:12},(_,i)=>pad2(i*5));
-    });
-
-    const openWheel = (mode, idx) => {
-      wheel.mode = mode;
-      wheel.idx = idx;
-      wheel.show = true;
-
-      const it = currentDay.value.items[idx];
-
-      if(mode==='time'){
-        const t = it.time || '09:00';
-        const [h,m] = t.split(':');
-        wheel.a = h; wheel.b = m;
-      }else if(mode==='stay'){
-        const m = Number(it.stayMin||0);
-        wheel.a = pad2(Math.floor(m/60));
-        wheel.b = pad2(m%60);
-      }else if(mode==='transit'){
-        wheel.transMode = it.toNext?.mode || 'drive';
-        const m = Number(it.toNext?.min||0);
-        wheel.a = pad2(Math.floor(m/60));
-        wheel.b = pad2(m%60);
-      }
-
-      nextTick(() => {
-        scrollTo(wheelA.value, wheel.a);
-        scrollTo(wheelB.value, wheel.b);
+      el('geoResult').textContent = '請選擇正確的定位結果：';
+      el('geoList').innerHTML = list.map((p,idx)=>`
+        <div class="it" style="margin-top:10px">
+          <div class="itTitle">${escapeHTML(p.display_name.split(',')[0] || p.display_name)}</div>
+          <div class="itSub">${escapeHTML(p.display_name)}</div>
+          <div style="margin-top:10px; display:flex; gap:10px">
+            <button class="btn tonal small" data-pick="${idx}">選這個</button>
+          </div>
+        </div>
+      `).join('');
+      el('geoList').querySelectorAll('button[data-pick]').forEach(b=>{
+        b.onclick = () => {
+          const p = list[Number(b.dataset.pick)];
+          pickedGeo = {
+            lat: Number(p.lat),
+            lon: Number(p.lon),
+            display: p.display_name.split(',')[0] || p.display_name,
+            full: p.display_name
+          };
+          el('geoResult').textContent = `已定位：${pickedGeo.display}`;
+          el('geoList').innerHTML = '';
+          toast('定位完成');
+        };
       });
     };
 
-    const closeWheel = () => wheel.show = false;
-
-    const scrollTo = (el, val) => {
-      if(!el) return;
-      const kids = Array.from(el.children);
-      const idx = kids.findIndex(x=>x.innerText.trim()===val);
-      if(idx>=0) el.scrollTop = idx * 44;
+    el('btnClearGeo').onclick = () => {
+      pickedGeo = null;
+      el('geoResult').textContent = '';
+      el('geoList').innerHTML = '';
+      toast('已清除定位');
     };
 
-    const onScroll = (which) => {
-      const el = which==='a' ? wheelA.value : wheelB.value;
-      if(!el) return;
-      const index = Math.round(el.scrollTop / 44);
-      const list = which==='a' ? listA.value : listB.value;
-      if(list[index]){
-        if(which==='a') wheel.a = list[index];
-        else wheel.b = list[index];
-      }
-    };
+    el('btnSaveItem').onclick = () => {
+      const time = normalizeTime(el('i_time').value || '');
+      const title = (el('i_title').value || '').trim();
+      const place = (el('i_place').value || '').trim();
+      const stayMin = clampInt(el('i_stay_h').value,0,24)*60 + clampInt(el('i_stay_m').value,0,59);
+      const toNextMin = clampInt(el('i_toNext').value,0,600);
+      const mode = el('i_mode').value || 'walk';
+      const locked = !!el('i_lock').checked;
 
-    const saveWheel = () => {
-      const idx = wheel.idx;
-      const it = currentDay.value.items[idx];
-      if(!it) return closeWheel();
+      if (!title) return toast('請輸入行程名稱');
 
-      if(wheel.mode==='time'){
-        it.time = `${wheel.a}:${wheel.b}`;
-      }else if(wheel.mode==='stay'){
-        it.stayMin = Number(wheel.a)*60 + Number(wheel.b);
-      }else if(wheel.mode==='transit'){
-        it.toNext = it.toNext || {mode:'drive', min:30};
-        it.toNext.mode = wheel.transMode;
-        it.toNext.min = Number(wheel.a)*60 + Number(wheel.b);
-      }
+      const item = {
+        id: uid(),
+        time: time || '',
+        title,
+        placeQuery: place,
+        category: selCat,
+        stayMin: isFinite(stayMin) ? stayMin : 0,
+        toNext: { mode, min: isFinite(toNextMin)?toNextMin:0 },
+        locked,
+        geo: pickedGeo,
+        route: { walkMin: null, driveMin: null, transitMin: null }
+      };
+      d.items.push(item);
 
-      closeWheel();
-      autoReschedule(currentDayIdx.value);
+      // sort by time if provided; otherwise keep order
+      d.items = sortItems(d.items);
+
+      // recalc
+      if (autoPush) recomputeDay(curDay);
+      computeRoutesForDay(curDay);
+
       saveAll();
-    };
-
-    // translate actions
-    const swapLang = () => {
-      const t = tr.from;
-      tr.from = tr.to;
-      tr.to = t;
-      saveAll();
-    };
-    const openGoogleTranslate = () => {
-      if(!tr.text) return alert('請先輸入文字');
-      const url = `https://translate.google.com/?sl=${encodeURIComponent(tr.from)}&tl=${encodeURIComponent(tr.to)}&text=${encodeURIComponent(tr.text)}&op=translate`;
-      window.open(url, '_blank');
-    };
-    const copyText = async () => {
-      try{
-        await navigator.clipboard.writeText(tr.text||'');
-        showToast('已複製');
-      }catch(_){
-        alert('複製失敗（iOS限制），請手動長按複製');
-      }
-    };
-
-    // money
-    const addExpense = () => {
-      if(!newExpense.item || !newExpense.amount) return;
-      expenses.value.push({
-        id: crypto.randomUUID(),
-        item: newExpense.item,
-        amount: Number(newExpense.amount),
-        dayIdx: Number(newExpense.dayIdx || 0)
-      });
-      newExpense.item = '';
-      newExpense.amount = '';
-      saveAll();
-      showToast('已加入支出');
-    };
-    const removeExpense = (i) => {
-      expenses.value.splice(i,1);
-      saveAll();
-    };
-
-    // FX (daily refresh)
-    const todayKey = () => {
-      const d = new Date();
-      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-    };
-
-    const refreshFX = async (force) => {
-      try{
-        const cache = JSON.parse(localStorage.getItem(FX_CACHE_KEY) || '{}');
-        const key = todayKey();
-        const curr = setup.currency;
-
-        if(!force && cache && cache.date===key && cache.currency===curr && typeof cache.rate==='number'){
-          exchangeRate.value = cache.rate;
-          fxLastUpdated.value = cache.date;
-          return;
-        }
-
-        // frankfurter: from=curr to=TWD
-        const url = `https://api.frankfurter.app/latest?from=${encodeURIComponent(curr)}&to=TWD`;
-        const res = await fetch(url);
-        const j = await res.json();
-        const rate = j?.rates?.TWD;
-        if(typeof rate === 'number'){
-          exchangeRate.value = rate;
-          fxLastUpdated.value = key;
-          localStorage.setItem(FX_CACHE_KEY, JSON.stringify({date:key, currency:curr, rate}));
-          saveAll();
-          showToast('匯率已更新');
-        }
-      }catch(_){
-        // keep manual
-      }
-    };
-
-    // auto refresh when started & currency changes
-    watch(() => setup.currency, () => {
-      if(hasStarted.value) refreshFX(false);
-    });
-
-    // PWA SW register
-    const registerSW = async () => {
-      if(!('serviceWorker' in navigator)) { swStatus.value='不支援'; return; }
-      try{
-        const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
-        swStatus.value = '已註冊';
-        reg.update?.();
-      }catch(_){
-        swStatus.value = '註冊失敗';
-      }
-    };
-
-    // on mounted
-    onMounted(async () => {
-      loadAll();
-      await registerSW();
-      if(hasStarted.value) refreshFX(false);
-    });
-
-    return {
-      hasStarted, viewMode, currentDayIdx, setup, totalDays, days,
-      searchQuery, suggestions, detectedCountry, isSearching,
-      debounceSearch, selectLocation,
-      initTrip, addDay, goBack,
-      currentDay, categories,
-      flights, currentDayFlights, addFlightSegment, openFlightEditor, removeFlight,
-      addItem, removeItem,
-      getTransIcon, transLabel,
-      geocodeItem, autoGeocode,
-      calcRoutes, openGoogleDirections,
-      wheel, wheelA, wheelB, wheelTitle, listA, listB, openWheel, closeWheel, saveWheel, onScroll,
-      minsToHM, fmtDate,
-      langs, tr, quickPhrases, swapLang, openGoogleTranslate, copyText,
-      expenses, newExpense, totalExpense, dailyTotals, addExpense, removeExpense,
-      exchangeRate, fxLastUpdated, refreshFX,
-      toast,
-      swStatus, forceReload,
-      saveAll
+      closeModal();
+      renderPlan();
+      toast('已加入行程');
     };
   }
-}).mount('#app');
+
+  function render(){
+    renderHeader();
+    renderDayBar();
+    renderPlan();
+    renderMoney();
+  }
+
+  function renderHeader(){
+    const title = ensureSetup() ? (setup.tripName || 'Travel Plan') : 'Travel Plan';
+    el('appTitle').textContent = title;
+
+    if (!ensureSetup()){
+      el('appSubtitle').textContent = '尚未建立行程';
+      return;
+    }
+    const range = `${setup.startDate} – ${setup.endDate}（${days.length} 天）`;
+    const dest = setup.destination ? ` / ${setup.destination}` : '';
+    const country = setup.country ? ` / ${setup.country}` : '';
+    el('appSubtitle').textContent = range + country + dest;
+  }
+
+  function renderDayBar(){
+    const bar = el('dayBar');
+    if (!ensureSetup() || !days?.length){
+      bar.innerHTML = '';
+      return;
+    }
+    bar.innerHTML = days.map((d, idx) => `
+      <div class="daypill ${idx===curDay?'active':''}" data-i="${idx}">
+        <div class="d">${d.short}</div>
+        <div class="n">D${idx+1}</div>
+      </div>
+    `).join('');
+    bar.querySelectorAll('.daypill').forEach(p=>{
+      p.onclick = () => {
+        curDay = Number(p.dataset.i);
+        renderPlan();
+        if (tab==='money') renderMoney();
+      };
+    });
+  }
+
+  function renderPlan(){
+    if (tab!=='plan') return;
+
+    const list = el('itList');
+    const empty = el('emptyHint');
+
+    if (!ensureSetup()){
+      list.innerHTML = '';
+      empty.style.display = '';
+      empty.textContent = '尚未建立行程，請先按左上角 ↺ 建立行程。';
+      return;
+    }
+
+    const d = days[curDay];
+    if (!d) return;
+
+    const items = d.items || [];
+    empty.style.display = items.length ? 'none' : '';
+    list.innerHTML = items.map((it, idx) => renderItem(it, idx)).join('');
+
+    // Bind actions
+    items.forEach((it, idx) => {
+      const base = `it_${it.id}`;
+      const btnEditTime = el(base + '_editTime');
+      const btnDel = el(base + '_del');
+      const btnLock = el(base + '_lock');
+      const btnStay = el(base + '_stay');
+      const btnToNext = el(base + '_toNext');
+      const btnMode = el(base + '_mode');
+      const btnGeo = el(base + '_geo');
+      const btnCat = el(base + '_cat');
+      const btnGmaps = el(base + '_gmaps');
+
+      if (btnEditTime) btnEditTime.onclick = () => openEditTime(it.id);
+      if (btnDel) btnDel.onclick = () => removeItem(it.id);
+      if (btnLock) btnLock.onchange = (e) => {
+        it.locked = !!e.target.checked;
+        saveAll();
+        if (autoPush) recomputeDay(curDay);
+        renderPlan();
+      };
+      if (btnStay) btnStay.onclick = () => openEditDuration(it.id, 'stay');
+      if (btnToNext) btnToNext.onclick = () => openEditDuration(it.id, 'toNext');
+      if (btnMode) btnMode.onclick = () => cycleMode(it.id);
+      if (btnGeo) btnGeo.onclick = () => openGeoPicker(it.id);
+      if (btnCat) btnCat.onclick = () => openCatPicker(it.id);
+
+      if (btnGmaps) btnGmaps.onclick = () => openGoogleMapsToNext(idx);
+    });
+  }
+
+  function renderItem(it, idx){
+    const time = it.time || '--:--';
+    const catLabel = catText(it.category);
+    const hasGeo = !!(it.geo && isFinite(it.geo.lat) && isFinite(it.geo.lon));
+    const geoText = hasGeo ? (it.geo.full || it.geo.display) : (it.placeQuery || '地點（輸入店名/景點，會自動定位）');
+
+    const route = it.route || {};
+    const walk = route.walkMin ?? '—';
+    const drive = route.driveMin ?? '—';
+    const transit = route.transitMin ?? '—';
+    const showR = showRoutes && hasGeo;
+
+    return `
+      <div class="it">
+        <div class="itTop">
+          <div class="timebox">
+            <div class="t">${escapeHTML(time)}</div>
+            <div class="edit" id="it_${it.id}_editTime">修改</div>
+          </div>
+
+          <div class="itMain">
+            <div style="display:flex; gap:10px; align-items:center">
+              <div class="itTitle" title="${escapeHTML(it.title)}">${escapeHTML(it.title)}</div>
+              <div class="badge ${hasGeo?'ok':''}">${hasGeo?'已定位':'未定位'}</div>
+            </div>
+            <div class="itSub" title="${escapeHTML(geoText)}">📍 ${escapeHTML(geoText)}</div>
+
+            <div class="itMeta">
+              <div class="metaPill muted" id="it_${it.id}_cat">🏷️ ${catLabel}</div>
+              <div class="metaPill" id="it_${it.id}_stay">⏳ 停留 ${minsToHM(it.stayMin||0)}</div>
+              <div class="metaPill" id="it_${it.id}_toNext">🚶/🚗/🚇 ${transLabel(it.toNext)} </div>
+              <div class="metaPill" id="it_${it.id}_mode">🔁 ${modeLabel((it.toNext||{}).mode||'walk')}</div>
+
+              <label class="switch" style="margin:0">
+                <input type="checkbox" id="it_${it.id}_lock" ${it.locked?'checked':''}/>
+                <span>鎖定</span>
+              </label>
+
+              <button class="btn small tonal" id="it_${it.id}_geo">定位</button>
+            </div>
+
+            ${showR ? `
+              <div class="routebar">
+                <div class="routechip">🚶 <b>${walk}</b> 分</div>
+                <div class="routechip">🚗 <b>${drive}</b> 分</div>
+                <div class="routechip">🚇 <b>${transit}</b> 分</div>
+                <button class="btn small" id="it_${it.id}_gmaps">Google Maps</button>
+              </div>
+            ` : ''}
+
+          </div>
+
+          <div class="itActions">
+            <div class="tinyIcon" id="it_${it.id}_del" title="刪除">🗑️</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function openEditTime(itemId){
+    const it = findItem(itemId);
+    if (!it) return;
+    sheetTitle.textContent = '修改時間';
+    sheetBody.innerHTML = `
+      <label>開始時間</label>
+      <input id="et" placeholder="例如：09:30" value="${escapeHTML(it.time||'')}" />
+      <div class="row" style="margin-top:12px">
+        <div class="col"><button class="btn primary" id="btnOk">確認</button></div>
+        <div class="col"><button class="btn danger" id="btnClear">清空時間</button></div>
+      </div>
+      <div class="hint">若開啟「自動推移」，你調整這筆時間後，後面會依序重算（除非後面的被鎖定）。</div>
+    `;
+    openModal();
+    el('btnOk').onclick = () => {
+      it.time = normalizeTime(el('et').value || '');
+      days[curDay].items = sortItems(days[curDay].items);
+      if (autoPush) recomputeDay(curDay);
+      computeRoutesForDay(curDay);
+      saveAll();
+      closeModal();
+      renderPlan();
+      toast('已更新時間');
+    };
+    el('btnClear').onclick = () => {
+      it.time = '';
+      if (autoPush) recomputeDay(curDay);
+      saveAll();
+      closeModal();
+      renderPlan();
+      toast('已清空時間');
+    };
+  }
+
+  function openEditDuration(itemId, kind){
+    const it = findItem(itemId);
+    if (!it) return;
+    const title = kind==='stay' ? '修改停留時間' : '修改交通時間（到下一個）';
+    const curMin = kind==='stay' ? (it.stayMin||0) : ((it.toNext||{}).min||0);
+    sheetTitle.textContent = title;
+
+    sheetBody.innerHTML = `
+      <label>分鐘</label>
+      <input id="dur" inputmode="numeric" value="${escapeHTML(String(curMin))}" />
+      <div class="row" style="margin-top:12px">
+        <div class="col"><button class="btn primary" id="btnOk">確認</button></div>
+        <div class="col"><button class="btn tonal" id="btnAuto">用估算（若已定位）</button></div>
+      </div>
+      <div class="hint">開啟「自動推移」時，這個值會影響後面開始時間。</div>
+    `;
+    openModal();
+
+    el('btnOk').onclick = () => {
+      const v = clampInt(el('dur').value, 0, 1440);
+      if (kind==='stay') it.stayMin = v;
+      else it.toNext.min = v;
+
+      if (autoPush) recomputeDay(curDay);
+      computeRoutesForDay(curDay);
+      saveAll();
+      closeModal();
+      renderPlan();
+      toast('已更新');
+    };
+
+    el('btnAuto').onclick = () => {
+      // if have next + geos, auto fill from route estimate (walk/drive/transit depends on mode)
+      const d = days[curDay];
+      const idx = d.items.findIndex(x=>x.id===itemId);
+      if (idx<0 || idx===d.items.length-1) return toast('此筆沒有下一個行程可估算');
+      const a = d.items[idx], b = d.items[idx+1];
+      if (!(a.geo && b.geo)) return toast('需要兩個行程都已定位');
+      const est = estimateAllModes(a.geo, b.geo);
+      const m = (a.toNext||{}).mode || 'walk';
+      const min = m==='walk' ? est.walkMin : (m==='drive'?est.driveMin:est.transitMin);
+      el('dur').value = String(min);
+      toast('已帶入估算分鐘');
+    };
+  }
+
+  function cycleMode(itemId){
+    const it = findItem(itemId);
+    if (!it) return;
+    const order = ['walk','drive','transit'];
+    const cur = (it.toNext||{}).mode || 'walk';
+    const next = order[(order.indexOf(cur)+1)%order.length];
+    it.toNext.mode = next;
+
+    // if have next coords, set to estimate automatically (nice UX)
+    const d = days[curDay];
+    const idx = d.items.findIndex(x=>x.id===itemId);
+    if (idx>=0 && idx<d.items.length-1){
+      const a = d.items[idx], b = d.items[idx+1];
+      if (a.geo && b.geo){
+        const est = estimateAllModes(a.geo, b.geo);
+        it.toNext.min = next==='walk' ? est.walkMin : (next==='drive'?est.driveMin:est.transitMin);
+      }
+    }
+
+    if (autoPush) recomputeDay(curDay);
+    computeRoutesForDay(curDay);
+    saveAll();
+    renderPlan();
+  }
+
+  function openGoogleMapsToNext(idx){
+    const d = days[curDay];
+    if (!d?.items?.length) return;
+    if (idx >= d.items.length-1) return toast('這是最後一個行程');
+    const a = d.items[idx], b = d.items[idx+1];
+    if (!(a.geo && b.geo)) return toast('需要兩筆都已定位');
+    const mode = (a.toNext||{}).mode || 'walk';
+    // Google Maps travelmode: walking, driving, transit
+    const tmode = mode==='walk' ? 'walking' : (mode==='drive' ? 'driving' : 'transit');
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${a.geo.lat},${a.geo.lon}&destination=${b.geo.lat},${b.geo.lon}&travelmode=${tmode}`;
+    window.open(url, '_blank');
+  }
+
+  function openGeoPicker(itemId){
+    const it = findItem(itemId);
+    if (!it) return;
+    sheetTitle.textContent = '定位（免金鑰）';
+    sheetBody.innerHTML = `
+      <div class="hint">輸入店名/景點，使用 OpenStreetMap Nominatim 搜尋。</div>
+      <label>地點文字</label>
+      <input id="gq" placeholder="例如：Fergburger" value="${escapeHTML(it.placeQuery||'')}" />
+      <div class="row" style="margin-top:12px">
+        <div class="col"><button class="btn tonal" id="btnSearch">搜尋</button></div>
+        <div class="col"><button class="btn danger" id="btnClear">清除定位</button></div>
+      </div>
+      <div id="gHint" class="hint" style="margin-top:10px"></div>
+      <div id="gList"></div>
+    `;
+    openModal();
+
+    el('btnSearch').onclick = async () => {
+      const q = (el('gq').value || '').trim();
+      it.placeQuery = q;
+      if (!q) return toast('請輸入地點');
+      el('gHint').textContent = '搜尋中...';
+      const list = await nominatimSearch(q);
+      if (!list.length){
+        el('gHint').textContent = '找不到結果（可換英文/更完整地址）';
+        el('gList').innerHTML = '';
+        return;
+      }
+      el('gHint').textContent = '請選擇：';
+      el('gList').innerHTML = list.map((p,idx)=>`
+        <div class="it">
+          <div class="itTitle">${escapeHTML(p.display_name.split(',')[0] || p.display_name)}</div>
+          <div class="itSub">${escapeHTML(p.display_name)}</div>
+          <div style="margin-top:10px"><button class="btn tonal small" data-p="${idx}">選這個</button></div>
+        </div>
+      `).join('');
+      el('gList').querySelectorAll('button[data-p]').forEach(b=>{
+        b.onclick = () => {
+          const p = list[Number(b.dataset.p)];
+          it.geo = {
+            lat: Number(p.lat), lon: Number(p.lon),
+            display: p.display_name.split(',')[0] || p.display_name,
+            full: p.display_name
+          };
+          computeRoutesForDay(curDay);
+          saveAll();
+          closeModal();
+          renderPlan();
+          toast('定位完成');
+        };
+      });
+    };
+
+    el('btnClear').onclick = () => {
+      it.geo = null;
+      computeRoutesForDay(curDay);
+      saveAll();
+      closeModal();
+      renderPlan();
+      toast('已清除定位');
+    };
+  }
+
+  function openCatPicker(itemId){
+    const it = findItem(itemId);
+    if (!it) return;
+    const cats = [
+      {key:'food', label:'美食'},
+      {key:'shop', label:'購物'},
+      {key:'stay', label:'住宿'},
+      {key:'fun', label:'遊樂'},
+      {key:'transport', label:'交通'},
+      {key:'spot', label:'景點'}
+    ];
+    sheetTitle.textContent = '選擇分類';
+    sheetBody.innerHTML = `
+      <div class="chips" id="cwrap">
+        ${cats.map(c => `<div class="chip ${c.key===it.category?'active':''}" data-k="${c.key}">${c.label}</div>`).join('')}
+      </div>
+      <div class="hint" style="margin-top:10px">點一下就會套用並回到行程。</div>
+    `;
+    openModal();
+    el('cwrap').querySelectorAll('.chip').forEach(ch=>{
+      ch.onclick = () => {
+        it.category = ch.dataset.k;
+        saveAll();
+        closeModal();
+        renderPlan();
+      };
+    });
+  }
+
+  function removeItem(itemId){
+    const d = days[curDay];
+    const idx = d.items.findIndex(x=>x.id===itemId);
+    if (idx<0) return;
+    d.items.splice(idx,1);
+    if (autoPush) recomputeDay(curDay);
+    computeRoutesForDay(curDay);
+    saveAll();
+    renderPlan();
+    toast('已刪除');
+  }
+
+  function findItem(itemId){
+    const d = days[curDay];
+    return d?.items?.find(x=>x.id===itemId) || null;
+  }
+
+  function sortItems(items){
+    // Items with time first by time, then those without time keep order at end
+    const withT = items.filter(x=>normalizeTime(x.time||''));
+    const noT = items.filter(x=>!normalizeTime(x.time||''));
+    withT.sort((a,b)=> timeToMin(a.time)-timeToMin(b.time));
+    return [...withT, ...noT];
+  }
+
+  function recomputeDay(dayIdx){
+    const d = days[dayIdx];
+    if (!d?.items?.length) return;
+
+    // cursor = first known time, else 09:00
+    let cursor = null;
+    for (const it of d.items){
+      if (normalizeTime(it.time||'')){
+        cursor = timeToMin(it.time);
+        break;
+      }
+    }
+    if (cursor===null) cursor = 9*60;
+
+    for (let i=0;i<d.items.length;i++){
+      const it = d.items[i];
+      const hasTime = normalizeTime(it.time||'');
+      if (it.locked && hasTime){
+        cursor = timeToMin(it.time);
+      } else {
+        it.time = minToTime(cursor);
+      }
+
+      // advance cursor by stay + travel-to-next (this item's toNext)
+      const stay = clampInt(it.stayMin||0, 0, 1440);
+      const travel = clampInt((it.toNext||{}).min||0, 0, 1440);
+      cursor += stay + travel;
+      if (cursor>=24*60) cursor = cursor % (24*60); // same-day view; cross-day handling can be added later
+    }
+  }
+
+  function computeRoutesForDay(dayIdx){
+    const d = days[dayIdx];
+    if (!d?.items?.length) return;
+    // compute per item to NEXT using coords (pure estimate)
+    for (let i=0;i<d.items.length;i++){
+      const a = d.items[i], b = d.items[i+1];
+      if (!a) continue;
+      if (a.geo && b && b.geo){
+        const est = estimateAllModes(a.geo, b.geo);
+        a.route = est;
+      } else {
+        a.route = { walkMin: null, driveMin: null, transitMin: null };
+      }
+    }
+  }
+
+  function estimateAllModes(aGeo, bGeo){
+    const km = haversineKm(aGeo.lat, aGeo.lon, bGeo.lat, bGeo.lon);
+    // assumptions (no-key, stable, fast):
+    const walkMin = Math.max(1, Math.round((km/5)*60));          // 5 km/h
+    const driveMin = Math.max(1, Math.round((km/30)*60));        // 30 km/h city avg
+    const transitMin = Math.max(2, Math.round((km/20)*60) + 10); // 20 km/h + waiting
+    return { walkMin, driveMin, transitMin };
+  }
+
+  async function nominatimSearch(q){
+    try{
+      // Nominatim usage policy: keep it light; this is user-triggered.
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&accept-language=zh-TW&q=' + encodeURIComponent(q);
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    }catch{
+      return [];
+    }
+  }
+
+  /* Money UI */
+  function renderMoney(){
+    if (tab!=='money') return;
+    if (!ensureSetup()){
+      el('fxInfo').textContent = '尚未建立行程';
+      el('totalFx').textContent = '0';
+      el('totalTwd').textContent = '≈ NT$ 0';
+      return;
+    }
+
+    // day options
+    el('expDay').innerHTML = days.map((d,idx)=>`<option value="${idx}">D${idx+1}（${d.short}）</option>`).join('');
+
+    const totals = calcDailyTotals();
+    const total = totals.reduce((a,b)=>a+b,0);
+
+    const cur = setup.currency || 'NZD';
+    el('fxInfo').textContent = `匯率（${cur}→TWD）：${fx.rate ? fx.rate.toFixed(4) : '未更新'} / 更新：${fx.lastDate||'未更新'}`;
+    el('totalFx').textContent = `${cur} ${formatNum(total)}`;
+    el('totalTwd').textContent = `≈ NT$ ${formatNum(Math.round(total * (fx.rate||0)))}`;
+
+    // daily list
+    el('dailyExp').innerHTML = totals.map((amt,idx)=>`
+      <div class="it" style="margin-top:10px">
+        <div class="itTitle">D${idx+1}（${days[idx].short}）</div>
+        <div class="itSub">${setup.currency} ${formatNum(amt)}</div>
+      </div>
+    `).join('');
+
+    // detail list
+    const list = el('expList');
+    const hint = el('noExpHint');
+    if (!exp.length){
+      list.innerHTML = '';
+      hint.style.display = '';
+    } else {
+      hint.style.display = 'none';
+      list.innerHTML = exp.map(e=>`
+        <div class="it" style="margin-top:10px">
+          <div class="itTitle">${escapeHTML(e.item)}</div>
+          <div class="itSub">D${(e.dayIdx??0)+1} · ${setup.currency} ${formatNum(Number(e.amount||0))}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function calcDailyTotals(){
+    const totals = Array(days.length).fill(0);
+    exp.forEach(e=>{
+      const i = e.dayIdx ?? 0;
+      if (i>=0 && i<totals.length) totals[i] += Number(e.amount||0);
+    });
+    return totals;
+  }
+
+  async function refreshFx(force){
+    if (!ensureSetup()) return;
+    const cur = setup.currency || 'NZD';
+    const today = new Date().toISOString().slice(0,10);
+
+    if (!force && fx.lastDate === today && fx.rate) {
+      // once per day
+      return;
+    }
+
+    // Use exchangerate.host (no key) - if blocked, user can still use manual rate
+    try{
+      const url = `https://api.exchangerate.host/latest?base=${encodeURIComponent(cur)}&symbols=TWD`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('fx');
+      const data = await res.json();
+      const rate = Number(data?.rates?.TWD || 0);
+      if (!rate) throw new Error('fx');
+      fx = { rate, lastDate: today };
+      saveJSON(K.fx, fx);
+      if (tab==='money') renderMoney();
+      toast(force ? '匯率已更新' : '匯率每日自動更新完成');
+    }catch{
+      toast('匯率更新失敗（可能被網路阻擋），不影響其他功能');
+    }
+  }
+
+  /* Setup → Days */
+  function buildDaysFromSetup(resetItems=false){
+    const start = setup.startDate;
+    const end = setup.endDate;
+    const arr = [];
+    const s = new Date(start + 'T00:00:00');
+    const e = new Date(end + 'T00:00:00');
+    if (isNaN(s) || isNaN(e)) return;
+
+    for (let d=new Date(s); d<=e; d.setDate(d.getDate()+1)){
+      const iso = d.toISOString().slice(0,10);
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      arr.push({
+        dateISO: iso,
+        short: `${mm}/${dd}`,
+        items: resetItems ? [] : (findOldItemsByDate(iso) || [])
+      });
+    }
+    days = arr;
+    curDay = 0;
+  }
+
+  function findOldItemsByDate(iso){
+    // if you later extend to keep items when changing date range
+    return null;
+  }
+
+  function saveAll(){
+    saveJSON(K.setup, setup);
+    saveJSON(K.days, days);
+    saveJSON(K.exp, exp);
+    saveJSON(K.fx, fx);
+  }
+
+  /* Modal helpers */
+  function openModal(){ modal.classList.add('show'); }
+  function closeModal(){ modal.classList.remove('show'); }
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=>toastEl.classList.remove('show'), 2200);
+  }
+
+  /* SW */
+  async function registerSW(){
+    if (!('serviceWorker' in navigator)) return;
+    try{
+      await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      // no UI needed; keep silent
+    }catch{}
+  }
+
+  /* Utils */
+  function loadJSON(k, fallback){
+    try{
+      const v = localStorage.getItem(k);
+      return v ? JSON.parse(v) : fallback;
+    }catch{
+      return fallback;
+    }
+  }
+  function saveJSON(k, v){
+    try{ localStorage.setItem(k, JSON.stringify(v)); }catch{}
+  }
+  function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
+  function escapeHTML(s){
+    return String(s||'')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#39;");
+  }
+  function normalizeTime(s){
+    s = String(s||'').trim();
+    if (!s) return '';
+    // allow 930 -> 09:30
+    if (/^\d{3,4}$/.test(s)){
+      const t = s.padStart(4,'0');
+      s = t.slice(0,2)+':'+t.slice(2,4);
+    }
+    const m = s.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+    return m ? `${String(m[1]).padStart(2,'0')}:${m[2]}` : '';
+  }
+  function timeToMin(t){
+    const nt = normalizeTime(t);
+    if (!nt) return 0;
+    const [h,m] = nt.split(':').map(Number);
+    return h*60+m;
+  }
+  function minToTime(min){
+    min = (min % (24*60) + (24*60)) % (24*60);
+    const h = String(Math.floor(min/60)).padStart(2,'0');
+    const m = String(min%60).padStart(2,'0');
+    return `${h}:${m}`;
+  }
+  function minsToHM(min){
+    min = clampInt(min,0,10000);
+    const h = Math.floor(min/60);
+    const m = min%60;
+    if (h<=0) return `${m}m`;
+    if (m<=0) return `${h}h`;
+    return `${h}h ${String(m).padStart(2,'0')}m`;
+  }
+  function clampInt(v, a, b){
+    const n = parseInt(v,10);
+    if (!isFinite(n)) return a;
+    return Math.min(b, Math.max(a, n));
+  }
+  function formatNum(n){
+    return Number(n||0).toLocaleString();
+  }
+  function transLabel(toNext){
+    const mode = (toNext||{}).mode || 'walk';
+    const min = clampInt((toNext||{}).min||0,0,1440);
+    const icon = mode==='walk'?'🚶':(mode==='drive'?'🚗':'🚇');
+    return `${icon} ${min} 分`;
+  }
+  function modeLabel(m){
+    return m==='walk'?'步行':(m==='drive'?'開車':'大眾');
+  }
+  function catText(k){
+    return k==='food'?'美食':
+           k==='shop'?'購物':
+           k==='stay'?'住宿':
+           k==='fun'?'遊樂':
+           k==='transport'?'交通':'景點';
+  }
+  function currencyOptions(sel){
+    const list = [
+      ['TWD','台幣'],['JPY','日幣'],['KRW','韓元'],['CNY','人民幣'],['HKD','港幣'],['THB','泰銖'],
+      ['SGD','新幣'],['VND','越南盾'],['MYR','馬幣'],['PHP','披索'],['IDR','印尼盾'],
+      ['USD','美金'],['CAD','加幣'],['EUR','歐元'],['GBP','英鎊'],['CHF','瑞士法郎'],
+      ['AUD','澳幣'],['NZD','紐幣']
+    ];
+    return list.map(([c,name]) => `<option value="${c}" ${c===sel?'selected':''}>${c} ${name}</option>`).join('');
+  }
+  function countryOptions(sel){
+    const list = [
+      ['','（可略過）'],
+      ['New Zealand','紐西蘭'],['Japan','日本'],['Thailand','泰國'],['South Korea','韓國'],
+      ['Vietnam','越南'],['Singapore','新加坡'],['Malaysia','馬來西亞'],['Philippines','菲律賓'],
+      ['Indonesia','印尼'],['Australia','澳洲'],['United States','美國'],['Canada','加拿大'],
+      ['United Kingdom','英國'],['France','法國'],['Germany','德國'],['Switzerland','瑞士'],
+      ['China','中國'],['Hong Kong','香港'],['Taiwan','台灣']
+    ];
+    return list.map(([v,cn])=>`<option value="${escapeHTML(v)}" ${v===sel?'selected':''}>${escapeHTML(cn)}${v?`（${escapeHTML(v)}）`:''}</option>`).join('');
+  }
+  function guessCurrencyFromCountry(country){
+    if (!country) return 'NZD';
+    const map = {
+      'New Zealand':'NZD',
+      'Japan':'JPY',
+      'Thailand':'THB',
+      'South Korea':'KRW',
+      'Vietnam':'VND',
+      'Singapore':'SGD',
+      'Malaysia':'MYR',
+      'Philippines':'PHP',
+      'Indonesia':'IDR',
+      'Australia':'AUD',
+      'United States':'USD',
+      'Canada':'CAD',
+      'United Kingdom':'GBP',
+      'France':'EUR',
+      'Germany':'EUR',
+      'Switzerland':'CHF',
+      'China':'CNY',
+      'Hong Kong':'HKD',
+      'Taiwan':'TWD'
+    };
+    return map[country] || 'USD';
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2){
+    const R = 6371;
+    const toRad = (d)=>d*Math.PI/180;
+    const dLat = toRad(lat2-lat1);
+    const dLon = toRad(lon2-lon1);
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    const c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R*c;
+  }
+
+})();
 </script>
 </body>
 </html>
