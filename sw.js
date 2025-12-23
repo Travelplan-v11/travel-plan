@@ -1,85 +1,62 @@
-/* sw.js - Travel Plan PWA (MD) */
-const VERSION = 'tp-md-v3-2025-12-23';
-const STATIC_CACHE = `static-${VERSION}`;
-const RUNTIME_CACHE = `runtime-${VERSION}`;
-
-const APP_SHELL = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './sw.js'
+/* sw.js - GitHub Pages friendly (project site) */
+const CACHE_VERSION = "travel-plan-v1.0.3";
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(STATIC_CACHE);
-    await cache.addAll(APP_SHELL);
-    self.skipWaiting();
-  })());
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_ASSETS))
+  );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(
-      keys
-        .filter(k => k !== STATIC_CACHE && k !== RUNTIME_CACHE)
-        .map(k => caches.delete(k))
-    );
-    self.clients.claim();
+    await Promise.all(keys.map((k) => (k !== CACHE_VERSION ? caches.delete(k) : null)));
+    await self.clients.claim();
   })());
 });
 
-async function cacheFirst(req) {
-  const cached = await caches.match(req);
-  if (cached) return cached;
-  const res = await fetch(req);
-  const cache = await caches.open(RUNTIME_CACHE);
-  try { await cache.put(req, res.clone()); } catch (_) {}
-  return res;
-}
-
-async function networkFirstForNav(req) {
-  try {
-    const res = await fetch(req);
-    const cache = await caches.open(RUNTIME_CACHE);
-    try { await cache.put('./index.html', res.clone()); } catch (_) {}
-    return res;
-  } catch (e) {
-    const cached = await caches.match('./index.html');
-    return cached || new Response('offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }});
-  }
-}
-
-self.addEventListener('fetch', (event) => {
+// Network-first for navigations (HTML), cache-first for others
+self.addEventListener("fetch", (event) => {
   const req = event.request;
-  const url = new URL(req.url);
 
-  if (req.method !== 'GET') return;
+  // Only handle GET
+  if (req.method !== "GET") return;
 
-  // SPA-like navigation fallback
-  if (req.mode === 'navigate') {
-    event.respondWith(networkFirstForNav(req));
+  // For page navigation
+  if (req.mode === "navigate") {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch(req);
+        const cache = await caches.open(CACHE_VERSION);
+        cache.put("./", fresh.clone());
+        return fresh;
+      } catch (e) {
+        const cached = await caches.match("./");
+        return cached || new Response("Offline", { status: 503 });
+      }
+    })());
     return;
   }
 
-  // same-origin assets: cache-first
-  if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(req));
-    return;
-  }
-
-  // cross-origin: pass-through + best-effort cache
+  // Static assets
   event.respondWith((async () => {
     const cached = await caches.match(req);
     if (cached) return cached;
     try {
-      const res = await fetch(req);
-      const cache = await caches.open(RUNTIME_CACHE);
-      try { await cache.put(req, res.clone()); } catch (_) {}
-      return res;
+      const fresh = await fetch(req);
+      const cache = await caches.open(CACHE_VERSION);
+      cache.put(req, fresh.clone());
+      return fresh;
     } catch (e) {
-      return cached || Response.error();
+      return cached || new Response("Offline", { status: 503 });
     }
   })());
 });
