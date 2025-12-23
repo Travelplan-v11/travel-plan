@@ -1,19 +1,13 @@
 {
   "name": "Travel Plan",
-  "short_name": "TravelPlan",
-  "start_url": "./",
+  "short_name": "Travel",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#0F766E",
-  "lang": "zh-TW",
-  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0d9488",
   "icons": [
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Crect rx='120' ry='120' width='512' height='512' fill='%230F766E'/%3E%3Cpath d='M136 288c80-20 112-52 240-144 18-12 40 8 28 26-86 132-124 174-152 218-10 16-32 10-34-8l-10-34-81-6-54-76z' fill='white'/%3E%3Ccircle cx='356' cy='172' r='26' fill='white'/%3E%3C/svg%3E",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
