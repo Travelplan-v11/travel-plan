@@ -1,1611 +1,2066 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Travel Plan (Material UI)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0F766E" />
+  <title>Travel Plan</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0F766E">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-  <!-- Vue + Tailwind -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect rx='42' ry='42' width='180' height='180' fill='%230F766E'/%3E%3Cpath d='M53 111c-6-5-8-12-5-19 3-8 12-12 20-9l11 4 22-20c6-5 14-7 22-5l21 6c6 2 10 7 11 13 1 7-2 13-8 17l-29 18 7 14c2 5 0 11-5 13-4 2-9 1-12-3l-12-16-14 9c-4 3-10 2-13-2z' fill='white'/%3E%3Ccircle cx='132' cy='67' r='10' fill='white'/%3E%3C/svg%3E" />
 
   <style>
     :root{
-      --md-sys-color-primary: #0F766E;
-      --md-sys-color-on-primary: #FFFFFF;
-      --md-sys-color-primary-container: #CCFBF1;
-      --md-sys-color-on-primary-container: #134E4A;
+      --md-sys-color-primary:#0F766E;
+      --md-sys-color-on-primary:#FFFFFF;
+      --md-sys-color-primary-container:#CFFAFE;
+      --md-sys-color-on-primary-container:#042F2E;
 
-      --md-sys-color-surface: #FFFFFF;
-      --md-sys-color-surface-variant: #F1F5F9;
-      --md-sys-color-surface-container: #F8FAFC;
-      --md-sys-color-surface-container-high: #EEF2F7;
+      --md-sys-color-secondary:#2563EB;
+      --md-sys-color-surface:#F7FAFA;
+      --md-sys-color-surface-2:#FFFFFF;
+      --md-sys-color-on-surface:#0B1220;
+      --md-sys-color-on-surface-variant:#4B5563;
+      --md-sys-color-outline:#D1D5DB;
+      --md-sys-color-error:#B91C1C;
 
-      --md-sys-color-on-surface: #0F172A;
-      --md-sys-color-on-surface-variant: #475569;
+      --md-elev-1: 0 1px 2px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06);
+      --md-elev-2: 0 6px 14px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.08);
 
-      --md-sys-color-outline: #CBD5E1;
-      --md-sys-color-outline-variant: #E2E8F0;
+      --r-lg: 18px;
+      --r-md: 14px;
+      --r-sm: 12px;
 
-      --md-elevation-1: 0 1px 2px rgba(15,23,42,0.08);
-      --md-elevation-2: 0 2px 6px rgba(15,23,42,0.12);
-      --md-elevation-3: 0 6px 18px rgba(15,23,42,0.14);
+      --pad: 14px;
+      --gap: 12px;
 
-      --md-shape-corner-md: 16px;
-      --md-shape-corner-lg: 22px;
-
-      --md-motion-fast: 120ms;
-      --md-motion-med: 180ms;
+      --font: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Helvetica Neue", Arial;
     }
 
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      font-family: Roboto, "Noto Sans TC", system-ui, -apple-system, Segoe UI, sans-serif;
-      background: var(--md-sys-color-surface-variant);
-      color: var(--md-sys-color-on-surface);
-      -webkit-tap-highlight-color: transparent;
+      margin:0;
+      font-family:var(--font);
+      background:linear-gradient(180deg, #0F766E 0%, #0F766E 160px, var(--md-sys-color-surface) 160px);
+      color:var(--md-sys-color-on-surface);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
-    .hide-scroll::-webkit-scrollbar { display: none; }
-    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    a{color:inherit}
 
-    .md-top-appbar{
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-      box-shadow: var(--md-elevation-2);
+    /* App frame */
+    .app{
+      min-height:100%;
+      padding-bottom: 86px; /* bottom nav */
     }
-    .md-appbar-title{ font-weight: 900; letter-spacing: 0.2px; }
-    .md-icon-btn{
-      width: 40px; height: 40px;
+
+    /* Top App Bar */
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      padding: calc(env(safe-area-inset-top) + 10px) var(--pad) 10px;
+      background:rgba(15,118,110,.98);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    .iconbtn{
+      width:42px; height:42px;
       border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform var(--md-motion-fast), background var(--md-motion-fast);
-    }
-    .md-icon-btn:hover{ background: rgba(255,255,255,0.14); }
-    .md-icon-btn:active{ transform: scale(0.96); }
-
-    .md-card{
-      background: var(--md-sys-color-surface);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-lg);
-      box-shadow: var(--md-elevation-1);
-    }
-    .md-card.e2{ box-shadow: var(--md-elevation-2); }
-    .md-card.e3{ box-shadow: var(--md-elevation-3); }
-
-    .md-chip{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--md-sys-color-outline-variant);
-      background: var(--md-sys-color-surface);
-      color: var(--md-sys-color-on-surface-variant);
-      font-weight: 900;
-      font-size: 12px;
-      box-shadow: 0 1px 1px rgba(15,23,42,0.04);
-      transition: background var(--md-motion-fast), transform var(--md-motion-fast), box-shadow var(--md-motion-fast);
-      user-select: none;
-    }
-    .md-chip:hover{ background: var(--md-sys-color-surface-container); }
-    .md-chip:active{ transform: scale(0.98); }
-    .md-chip.active{
-      background: var(--md-sys-color-primary-container);
-      border-color: rgba(13,148,136,0.25);
-      color: var(--md-sys-color-on-primary-container);
-      box-shadow: var(--md-elevation-2);
-    }
-
-    .md-button{
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 13px;
-      padding: 12px 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: transform var(--md-motion-fast), box-shadow var(--md-motion-fast), background var(--md-motion-fast);
-      user-select: none;
-    }
-    .md-button:active{ transform: scale(0.98); }
-    .md-button.filled{
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-      box-shadow: var(--md-elevation-2);
-    }
-    .md-button.filled:hover{ filter: brightness(0.98); box-shadow: var(--md-elevation-3); }
-    .md-button.tonal{
-      background: var(--md-sys-color-primary-container);
-      color: var(--md-sys-color-on-primary-container);
-      border: 1px solid rgba(13,148,136,0.22);
-    }
-    .md-button.outlined{
-      background: transparent;
-      color: var(--md-sys-color-primary);
-      border: 1px solid rgba(13,148,136,0.35);
-    }
-
-    .md-field{
-      border-radius: var(--md-shape-corner-md);
-      background: var(--md-sys-color-surface-container-high);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      padding: 10px 12px;
-      transition: border var(--md-motion-fast), box-shadow var(--md-motion-fast), background var(--md-motion-fast);
-    }
-    .md-field:focus-within{
-      border-color: rgba(13,148,136,0.55);
-      box-shadow: 0 0 0 3px rgba(13,148,136,0.16);
-      background: #F6FFFE;
-    }
-    .md-field label{
-      display: block;
-      font-size: 10px;
-      font-weight: 900;
-      color: rgba(71,85,105,0.9);
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .md-field .row{ display:flex; align-items:center; gap:10px; }
-    .md-field input, .md-field textarea, .md-field select{
-      width:100%;
-      background: transparent;
-      border:none;
-      outline:none;
-      font-weight: 800;
-      color: var(--md-sys-color-on-surface);
-      font-size: 14px;
-    }
-
-    .autocomplete-dropdown{
-      position:absolute; top:100%; left:0; right:0;
-      background: var(--md-sys-color-surface);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: 18px;
-      box-shadow: var(--md-elevation-3);
-      z-index: 50;
-      max-height: 260px;
-      overflow-y: auto;
-      margin-top: 6px;
-    }
-    .suggestion-item{
-      padding: 12px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface-variant);
-      border-bottom: 1px solid var(--md-sys-color-outline-variant);
-      display:flex; flex-direction:column;
-    }
-    .suggestion-item:hover{ background: var(--md-sys-color-surface-container); }
-    .suggestion-item:last-child{ border-bottom: none; }
-
-    .setup-bg{
-      background: radial-gradient(900px 500px at 20% 10%, rgba(255,255,255,0.18), transparent 60%),
-                  linear-gradient(135deg, #0F766E 0%, #0EA5A5 45%, #2563EB 100%);
-    }
-
-    .day-chip{
-      width: 76px; height: 56px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.28);
-      background: rgba(255,255,255,0.14);
-      color: rgba(255,255,255,0.92);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:2px;
-      transition: transform var(--md-motion-fast), background var(--md-motion-fast), box-shadow var(--md-motion-fast);
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(0,0,0,.15);
+      color:white;
+      display:grid; place-items:center;
+      cursor:pointer;
       user-select:none;
     }
-    .day-chip:hover{ background: rgba(255,255,255,0.18); }
-    .day-chip:active{ transform: scale(0.98); }
-    .day-chip.active{
-      background:#FFF;
-      color: var(--md-sys-color-primary);
-      border-color:#FFF;
-      box-shadow: var(--md-elevation-3);
-      transform: scale(1.02);
-    }
-
-    .md-bottom-nav{
-      position:absolute;
-      left:0; right:0; bottom:0;
-      background: var(--md-sys-color-surface);
-      border-top: 1px solid var(--md-sys-color-outline-variant);
-      box-shadow: 0 -8px 24px rgba(15,23,42,0.10);
-      z-index: 30;
-      padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
-    }
-    .md-nav-item{
+    .titlebox{
       flex:1;
-      border-radius:999px;
-      padding: 10px 8px;
-      display:flex; align-items:center; justify-content:center;
-      gap:10px;
-      font-weight: 900;
-      font-size: 12px;
-      color: var(--md-sys-color-on-surface-variant);
-      transition: background var(--md-motion-fast), transform var(--md-motion-fast);
-      user-select:none;
+      min-width:0;
+      color:white;
     }
-    .md-nav-item .material-symbols-rounded{ font-size:22px; }
-    .md-nav-item.active{
+    .title{
+      font-size:18px; font-weight:800; letter-spacing:.2px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .subtitle{
+      margin-top:2px;
+      font-size:12px;
+      opacity:.9;
+    }
+
+    .seg-actions{
+      display:flex; gap:8px;
+      padding:6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(0,0,0,.12);
+    }
+    .seg-actions button{
+      width:42px; height:42px;
+      border-radius:999px;
+      border:0;
+      background:transparent;
+      color:white;
+      cursor:pointer;
+    }
+    .seg-actions button.active{
+      background:white;
+      color: var(--md-sys-color-on-surface);
+      box-shadow: var(--md-elev-1);
+    }
+    .seg-actions .glyph{
+      font-size:18px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    /* Content */
+    .content{
+      padding: 12px var(--pad) 16px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    /* Cards */
+    .card{
+      background: var(--md-sys-color-surface-2);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: var(--r-lg);
+      box-shadow: var(--md-elev-1);
+      overflow:hidden;
+    }
+    .card-hd{
+      padding: 14px 14px 10px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    .card-hd h3{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .card-bd{ padding: 0 14px 14px; }
+
+    /* Day chips */
+    .daystrip{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding: 8px 2px 2px;
+      scrollbar-width:none;
+    }
+    .daystrip::-webkit-scrollbar{display:none}
+    .daychip{
+      min-width:78px;
+      padding:10px 10px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.28);
+      background:rgba(0,0,0,.08);
+      color:white;
+      cursor:pointer;
+      user-select:none;
+      text-align:center;
+    }
+    .daychip .dnum{font-weight:900; font-size:16px}
+    .daychip .date{font-size:12px; opacity:.9}
+    .daychip.active{
+      background:white;
+      color: var(--md-sys-color-on-surface);
+      border-color: rgba(0,0,0,.06);
+      box-shadow: var(--md-elev-1);
+    }
+
+    /* Form controls */
+    .row{display:flex; gap:10px; align-items:center}
+    .col{display:flex; flex-direction:column; gap:8px}
+    .label{
+      font-size:12px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .tf{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid var(--md-sys-color-outline);
+      background:#fff;
+      outline:none;
+      font-size:14px;
+    }
+    .tf:focus{ border-color: rgba(15,118,110,.9); box-shadow: 0 0 0 3px rgba(15,118,110,.12); }
+    .select{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid var(--md-sys-color-outline);
+      background:#fff;
+      font-size:14px;
+    }
+
+    .btn{
+      border:0;
+      padding: 12px 14px;
+      border-radius: 999px;
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      font-weight:800;
+      cursor:pointer;
+      box-shadow: var(--md-elev-1);
+      white-space:nowrap;
+    }
+    .btn.tonal{
       background: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-on-primary-container);
     }
-    .md-nav-item:active{ transform: scale(0.98); }
-
-    .transit-line{ position:absolute; left:24px; top:-24px; bottom:-24px; width:2px; background: var(--md-sys-color-outline-variant); z-index:0; }
-    .wheel-container{ display:flex; justify-content:center; height:160px; position:relative; background: var(--md-sys-color-surface-container); border-radius:18px; overflow:hidden; margin:10px 0; border:1px solid var(--md-sys-color-outline-variant); }
-    .wheel-highlight{ position:absolute; top:50%; left:0; width:100%; height:40px; background: rgba(13,148,136,0.10); border-top:1px solid rgba(13,148,136,0.22); border-bottom:1px solid rgba(13,148,136,0.22); transform: translateY(-50%); pointer-events:none; z-index:10; }
-    .wheel-col{ flex:1; height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; padding:60px 0; box-sizing:border-box; scrollbar-width:none; z-index:5; }
-    .wheel-col::-webkit-scrollbar{ display:none; }
-    .wheel-item{ height:40px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#94a3b8; scroll-snap-align:center; transition:0.2s; }
-    .wheel-item.selected{ color: var(--md-sys-color-primary); font-weight: 900; font-size:22px; transform: scale(1.06); }
-
-    .md-sheet{
-      background: var(--md-sys-color-surface);
-      border-radius: 28px 28px 0 0;
-      box-shadow: 0 -14px 40px rgba(15,23,42,0.22);
-      border: 1px solid var(--md-sys-color-outline-variant);
+    .btn.outline{
+      background:transparent;
+      color: var(--md-sys-color-on-surface);
+      border:1px solid var(--md-sys-color-outline);
+      box-shadow:none;
     }
-    .md-sheet-handle{
-      width: 40px; height: 4px;
-      border-radius: 999px;
-      background: rgba(148,163,184,0.55);
-      margin: 0 auto 10px;
+    .btn.danger{
+      background: var(--md-sys-color-error);
+      color:white;
     }
 
-    .toast{
-      position:absolute; left:50%; transform:translateX(-50%);
-      bottom: 88px;
-      background: rgba(15,23,42,0.92);
-      color:#fff;
+    /* Chips (category selector) */
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:6px;
+    }
+    .chip{
       padding: 10px 12px;
       border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      z-index: 60;
-      display:flex; align-items:center; gap:8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border:1px solid var(--md-sys-color-outline);
+      background:#fff;
+      font-size:13px;
+      font-weight:800;
+      color: var(--md-sys-color-on-surface);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      border-color: rgba(15,118,110,.45);
+      background: rgba(15,118,110,.10);
+      color: #064E4A;
     }
 
-    .fade-enter-active, .fade-leave-active { transition: opacity 0.25s ease; }
-    .fade-enter-from, .fade-leave-to { opacity: 0; }
-    .slide-up-enter-active, .slide-up-leave-active { transition: transform 0.25s ease-out; }
-    .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
+    /* Itinerary items */
+    .item{
+      display:flex;
+      gap:12px;
+      padding: 12px;
+      border-radius: var(--r-lg);
+      border:1px solid rgba(0,0,0,.06);
+      background:#fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .timebox{
+      width:78px;
+      flex:0 0 78px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:8px;
+    }
+    .timeinput{
+      width:78px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border:1px solid var(--md-sys-color-outline);
+      font-weight:900;
+      font-size:16px;
+      outline:none;
+    }
+    .smallbtn{
+      width:78px;
+      padding:10px 0;
+      border-radius:999px;
+      border:1px solid var(--md-sys-color-outline);
+      background:#fff;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .meta{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .meta .topline{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .titleinput{
+      flex:1;
+      min-width:0;
+      font-size:16px;
+      font-weight:900;
+      border:0;
+      outline:none;
+      padding: 6px 0;
+    }
+    .badge{
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(15,118,110,.10);
+      color:#064E4A;
+      white-space:nowrap;
+    }
+    .place{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+      color: var(--md-sys-color-on-surface-variant);
+      font-size:13px;
+    }
+    .place .pin{font-weight:900}
+    .place .addr{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .item-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(0,0,0,.08);
+      background: #fff;
+      font-weight:900;
+      font-size:13px;
+      color: var(--md-sys-color-on-surface);
+      cursor:pointer;
+      user-select:none;
+    }
+    .pill .hint{font-weight:800; color: var(--md-sys-color-on-surface-variant)}
+    .pill select{
+      border:0; outline:none; background:transparent; font-weight:900;
+    }
+    .pill input{
+      width:60px;
+      border:0; outline:none; background:transparent;
+      font-weight:900;
+    }
+    .switch{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      font-weight:900;
+      font-size:13px;
+      user-select:none;
+    }
+    .switch input{ width:46px; height:26px; }
+
+    .trash{
+      margin-left:auto;
+      border:0;
+      background:transparent;
+      color: var(--md-sys-color-on-surface-variant);
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    /* Route card */
+    .route{
+      margin: 10px 0 0 0;
+      padding: 12px;
+      border-radius: var(--r-lg);
+      border:1px dashed rgba(0,0,0,.18);
+      background: rgba(15,118,110,.06);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .route-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .route-modes{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .modechip{
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .modechip.active{
+      background: rgba(37,99,235,.10);
+      border-color: rgba(37,99,235,.35);
+      color:#1E3A8A;
+    }
+    .route-bottom{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Flight card */
+    .flight{
+      background: linear-gradient(90deg, rgba(37,99,235,.18), rgba(15,118,110,.14));
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .flight-inner{
+      padding: 14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .flight-side{
+      width:40%;
+      min-width:0;
+    }
+    .flight-time{
+      font-weight:1000;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    .flight-label{
+      font-size:12px;
+      font-weight:900;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top:2px;
+    }
+    .flight-air{
+      margin-top:6px;
+      font-weight:1000;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .flight-mid{
+      width:20%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+    }
+    .flight-mid .plane{ font-size:18px; font-weight:1000; }
+    .flight-mid .no{ font-size:12px; font-weight:1000; opacity:.9;}
+    .flight-mid .dur{
+      padding:8px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.10);
+      font-weight:1000;
+      font-size:12px;
+      text-align:center;
+      min-width:92px;
+    }
+    .arrive-big{
+      display:inline-block;
+      margin-left:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(185,28,28,.12);
+      color:#7F1D1D;
+      font-weight:1000;
+      font-size:12px;
+      vertical-align:middle;
+    }
+
+    /* Bottom nav */
+    .bottomnav{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding: 10px var(--pad) calc(env(safe-area-inset-bottom) + 12px);
+      background:rgba(247,250,250,.92);
+      backdrop-filter: blur(10px);
+      border-top:1px solid rgba(0,0,0,.06);
+      z-index:30;
+    }
+    .navrow{
+      display:flex;
+      gap:10px;
+    }
+    .navbtn{
+      flex:1;
+      padding: 12px 10px;
+      border-radius: 18px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight:1000;
+    }
+    .navbtn.active{
+      background: rgba(15,118,110,.12);
+      border-color: rgba(15,118,110,.22);
+      color:#064E4A;
+    }
+    .navbtn .glyph{ font-weight:1200; }
+
+    /* FAB */
+    .fab{
+      position:fixed;
+      right: var(--pad);
+      bottom: calc(env(safe-area-inset-bottom) + 90px);
+      width:56px; height:56px;
+      border-radius: 18px;
+      border:0;
+      background: var(--md-sys-color-primary);
+      color:white;
+      font-size:26px;
+      font-weight:1000;
+      box-shadow: var(--md-elev-2);
+      cursor:pointer;
+      z-index:40;
+    }
+
+    /* Snackbar */
+    .snack{
+      position:fixed;
+      left: var(--pad);
+      right: var(--pad);
+      bottom: calc(env(safe-area-inset-bottom) + 160px);
+      background: rgba(11,18,32,.92);
+      color:white;
+      padding: 12px 14px;
+      border-radius: 16px;
+      box-shadow: var(--md-elev-2);
+      display:none;
+      z-index:60;
+      font-weight:900;
+    }
+
+    /* Dialog */
+    .dlg-mask{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.35);
+      display:none;
+      z-index:80;
+      padding: 16px;
+      align-items:flex-end;
+    }
+    .dlg{
+      width:100%;
+      max-width: 680px;
+      margin: 0 auto;
+      background:#fff;
+      border-radius: 24px;
+      box-shadow: var(--md-elev-2);
+      overflow:hidden;
+      max-height: 86vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .dlg-hd{
+      padding: 14px 14px 10px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    .dlg-hd .t{font-weight:1000}
+    .dlg-bd{
+      padding: 12px 14px 14px;
+      overflow:auto;
+    }
+    .dlg-ft{
+      padding: 12px 14px 14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      border-top:1px solid rgba(0,0,0,.06);
+    }
+
+    .muted{ color: var(--md-sys-color-on-surface-variant); }
+    .hr{ height:1px; background:rgba(0,0,0,.06); margin: 12px 0; }
+
+    /* Boot overlay to avoid "blank" */
+    #boot{
+      position:fixed; inset:0;
+      background: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      font-weight:1000;
+      color:#0B1220;
+    }
   </style>
 </head>
 
-<body class="h-screen flex flex-col overflow-hidden">
-  <div id="app" class="h-full w-full max-w-md mx-auto relative bg-white sm:h-[95vh] sm:rounded-[28px] sm:my-4 sm:shadow-2xl sm:border-4 sm:border-slate-100 overflow-hidden flex flex-col">
+<body>
+  <div id="boot">載入中…</div>
+  <div id="app" class="app" aria-label="Travel Plan App"></div>
 
-    <!-- SETUP -->
-    <div v-if="!hasStarted" class="absolute inset-0 z-50 setup-bg flex flex-col items-center justify-center p-6">
-      <div class="w-full max-w-md">
-        <div class="text-center mb-5">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/16 backdrop-blur-sm border border-white/18 shadow-md">
-            <span class="material-symbols-rounded text-white text-3xl">flight</span>
-          </div>
-          <h1 class="mt-4 text-3xl font-black text-white tracking-wide">Travel Plan</h1>
-          <p class="mt-1 text-white/80 text-sm font-bold">Material UI 版（功能不變）</p>
+  <div class="snack" id="snack"></div>
+
+  <!-- Flights dialog -->
+  <div class="dlg-mask" id="dlgMask">
+    <div class="dlg" role="dialog" aria-modal="true">
+      <div class="dlg-hd">
+        <div class="t">航班設定（最多 2 段 / 去回）</div>
+        <button class="iconbtn" id="dlgClose" aria-label="Close">✕</button>
+      </div>
+      <div class="dlg-bd" id="dlgBody"></div>
+      <div class="dlg-ft">
+        <button class="btn outline" id="dlgCancel">取消</button>
+        <button class="btn" id="dlgSave">儲存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ---------------------------
+   Minimal error overlay (no console needed)
+---------------------------- */
+(function(){
+  const boot = document.getElementById('boot');
+  window.addEventListener('error', (e)=>{
+    boot.style.display='flex';
+    boot.style.padding='16px';
+    boot.style.whiteSpace='pre-wrap';
+    boot.textContent = '發生錯誤：\\n' + (e.message || 'Unknown') + '\\n\\n你可以把這段截圖傳給我，我就能精準修。';
+  });
+  window.addEventListener('unhandledrejection', (e)=>{
+    boot.style.display='flex';
+    boot.style.padding='16px';
+    boot.style.whiteSpace='pre-wrap';
+    boot.textContent = 'Promise 錯誤：\\n' + (e.reason?.message || String(e.reason)) + '\\n\\n你可以把這段截圖傳給我。';
+  });
+})();
+
+/* ---------------------------
+   State + Storage
+---------------------------- */
+const LS_KEY = 'travel_plan_state_v3_md';
+
+const CATEGORIES = ['美食','購物','住宿','遊樂','交通','景點'];
+
+const DEFAULT_STATE = {
+  trip: {
+    name: '皇后鎮',
+    startDate: '2026-02-26',
+    endDate: '2026-03-06',
+  },
+  view: 'plan', // plan | translate | money
+  selectedDay: 0,
+
+  flights: {
+    outbound: [
+      { flightNo:'', from:'TPE', to:'', departDate:'', departTime:'', arriveTime:'', arriveNextDay:false },
+      { flightNo:'', from:'', to:'', departDate:'', departTime:'', arriveTime:'', arriveNextDay:false },
+    ],
+    inbound: [
+      { flightNo:'', from:'', to:'TPE', departDate:'', departTime:'', arriveTime:'', arriveNextDay:false },
+      { flightNo:'', from:'', to:'', departDate:'', departTime:'', arriveTime:'', arriveNextDay:false },
+    ],
+  },
+
+  days: [],
+
+  routeModeDefault: 'walk', // walk | drive | transit
+
+  translate: {
+    sl: 'zh-TW',
+    tl: 'th',
+    text: '',
+  },
+
+  money: {
+    currency: 'NZD',
+    twd: 'TWD',
+    exchangeRate: 19.2,
+    autoRate: true,
+    lastRateDate: '',
+    expenses: [] // {id, dayIndex, title, amount}
+  }
+};
+
+function uid(){
+  return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return structuredClone(DEFAULT_STATE);
+    const s = JSON.parse(raw);
+    return mergeDeep(structuredClone(DEFAULT_STATE), s);
+  }catch{
+    return structuredClone(DEFAULT_STATE);
+  }
+}
+
+function saveState(){
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function mergeDeep(target, src){
+  for(const k in src){
+    if(src[k] && typeof src[k]==='object' && !Array.isArray(src[k])){
+      target[k] = mergeDeep(target[k] || {}, src[k]);
+    }else{
+      target[k] = src[k];
+    }
+  }
+  return target;
+}
+
+let state = loadState();
+
+/* ---------------------------
+   Date helpers
+---------------------------- */
+function parseDate(s){ // YYYY-MM-DD
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function fmtDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function addDays(dateStr, n){
+  const d = parseDate(dateStr);
+  d.setDate(d.getDate()+n);
+  return fmtDate(d);
+}
+function daysBetweenInclusive(startStr, endStr){
+  const a = parseDate(startStr);
+  const b = parseDate(endStr);
+  const diff = Math.round((b - a) / 86400000);
+  return diff + 1;
+}
+function toHM(min){
+  const h = Math.floor(min/60);
+  const m = min%60;
+  if(h<=0) return `${m}m`;
+  if(m===0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+function timeToMin(t){ // "HH:MM"
+  if(!t) return null;
+  const [h,m] = t.split(':').map(Number);
+  if(Number.isNaN(h)||Number.isNaN(m)) return null;
+  return h*60 + m;
+}
+function minToTime(min){
+  min = ((min%1440)+1440)%1440;
+  const h = String(Math.floor(min/60)).padStart(2,'0');
+  const m = String(min%60).padStart(2,'0');
+  return `${h}:${m}`;
+}
+function todayStr(){
+  const d = new Date();
+  return fmtDate(d);
+}
+
+/* ---------------------------
+   Initialize days if empty
+---------------------------- */
+function ensureDays(){
+  const n = daysBetweenInclusive(state.trip.startDate, state.trip.endDate);
+  if(!Array.isArray(state.days) || state.days.length !== n){
+    const newDays = [];
+    for(let i=0;i<n;i++){
+      const date = addDays(state.trip.startDate, i);
+      newDays.push({
+        date,
+        items: []
+      });
+    }
+    // try migrate existing items by date if possible
+    const byDate = new Map((state.days||[]).map(d=>[d.date,d]));
+    for(const d of newDays){
+      if(byDate.has(d.date)){
+        d.items = (byDate.get(d.date).items||[]);
+      }
+    }
+    state.days = newDays;
+    state.selectedDay = Math.min(state.selectedDay||0, n-1);
+    saveState();
+  }
+}
+ensureDays();
+
+/* ---------------------------
+   Auto push time logic
+---------------------------- */
+function recalcFrom(dayIndex, startItemIndex){
+  const day = state.days[dayIndex];
+  if(!day) return;
+  const items = day.items;
+
+  // If startItemIndex out of range, just normalize order by start time
+  if(items.length===0) return;
+
+  // keep current order; but ensure stable ordering (start time, then insertion)
+  // Do NOT reorder automatically; users may rely on list order
+  // We'll only push forward based on list order.
+
+  let t = null;
+  if(startItemIndex <= 0){
+    const first = items[0];
+    t = timeToMin(first.start) ?? 9*60;
+    if(!first.start) first.start = minToTime(t);
+  }else{
+    // base on previous item
+    const prev = items[startItemIndex-1];
+    const prevStart = timeToMin(prev.start);
+    const prevStay = Number(prev.stayMin ?? 0);
+    const prevTravel = Number(prev.travelToNextMin ?? 0);
+    if(prevStart==null){
+      prev.start = '09:00';
+      t = 9*60 + prevStay + prevTravel;
+    }else{
+      t = prevStart + prevStay + prevTravel;
+    }
+  }
+
+  for(let i=startItemIndex;i<items.length;i++){
+    const it = items[i];
+
+    if(it.locked){
+      // locked item: do not change it, but reset t based on its own time for next propagation
+      const fixed = timeToMin(it.start);
+      if(fixed!=null){
+        t = fixed + Number(it.stayMin ?? 0) + Number(it.travelToNextMin ?? 0);
+      }else{
+        // locked but empty time -> fill it, then continue
+        it.start = minToTime(t);
+        t = t + Number(it.stayMin ?? 0) + Number(it.travelToNextMin ?? 0);
+      }
+      continue;
+    }
+
+    // not locked -> set its start = t
+    it.start = minToTime(t);
+    t = t + Number(it.stayMin ?? 0) + Number(it.travelToNextMin ?? 0);
+  }
+
+  saveState();
+}
+
+function setDefaultTimesForNewItem(dayIndex){
+  const day = state.days[dayIndex];
+  const items = day.items;
+  if(items.length===0) return '09:00';
+  const last = items[items.length-1];
+  const base = timeToMin(last.start) ?? 9*60;
+  const next = base + Number(last.stayMin ?? 0) + Number(last.travelToNextMin ?? 0);
+  return minToTime(next);
+}
+
+/* ---------------------------
+   Geo helpers + route estimation
+---------------------------- */
+function haversineKm(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const toRad = (x)=>x*Math.PI/180;
+  const dLat = toRad(lat2-lat1);
+  const dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+function estimateMinutesByMode(km, mode){
+  // conservative averages
+  if(mode==='walk') return Math.max(1, Math.round(km / 4.8 * 60));
+  if(mode==='drive') return Math.max(2, Math.round(km / 35 * 60));
+  return Math.max(3, Math.round(km / 20 * 60)); // transit
+}
+
+async function geocodeNominatim(q){
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=zh-TW&q=${encodeURIComponent(q)}`;
+  const res = await fetch(url, { method:'GET' });
+  if(!res.ok) throw new Error('定位失敗（網路/服務）');
+  const arr = await res.json();
+  if(!arr || !arr[0]) throw new Error('找不到結果');
+  return {
+    lat: Number(arr[0].lat),
+    lon: Number(arr[0].lon),
+    address: arr[0].display_name || q,
+    name: q
+  };
+}
+
+function googleMapsDirectionsUrl(from, to, mode){
+  // mode: walking | driving | transit
+  const travelmode = mode==='walk' ? 'walking' : (mode==='drive' ? 'driving' : 'transit');
+  const origin = `${from.lat},${from.lon}`;
+  const dest = `${to.lat},${to.lon}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&travelmode=${travelmode}`;
+}
+
+/* ---------------------------
+   Currency rate (daily refresh, no key)
+   Source endpoint: @fawazahmed0/currency-api (jsDelivr)
+---------------------------- */
+async function fetchRateToTWD(fromCurrency){
+  const base = fromCurrency.toLowerCase();
+  const url = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`;
+  const res = await fetch(url, { method:'GET' });
+  if(!res.ok) throw new Error('匯率取得失敗');
+  const data = await res.json();
+  const twd = data?.[base]?.twd;
+  if(!twd) throw new Error('匯率資料缺少 TWD');
+  return Number(twd);
+}
+async function refreshRateIfNeeded(force=false){
+  if(!state.money.autoRate && !force) return;
+  const t = todayStr();
+  if(!force && state.money.lastRateDate === t) return;
+
+  try{
+    const rate = await fetchRateToTWD(state.money.currency);
+    // rate: 1 currency -> TWD
+    state.money.exchangeRate = Number(rate.toFixed(4));
+    state.money.lastRateDate = t;
+    saveState();
+    snack('匯率已更新（每日一次）');
+    render();
+  }catch(e){
+    snack('匯率更新失敗：' + (e.message || ''));
+  }
+}
+
+/* ---------------------------
+   UI helpers
+---------------------------- */
+const appEl = document.getElementById('app');
+const snackEl = document.getElementById('snack');
+
+function snack(msg){
+  snackEl.textContent = msg;
+  snackEl.style.display = 'block';
+  clearTimeout(snackEl._t);
+  snackEl._t = setTimeout(()=>snackEl.style.display='none', 2200);
+}
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, (c)=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function daysCount(){
+  return daysBetweenInclusive(state.trip.startDate, state.trip.endDate);
+}
+
+/* ---------------------------
+   Flights view-model for current day:
+   - If a leg arrives next day, show depart on D1, arrival on D2.
+---------------------------- */
+function getFlightCardsForDay(dateStr){
+  const cards = [];
+  const groups = [
+    { key:'outbound', label:'去程' },
+    { key:'inbound', label:'回程' }
+  ];
+  for(const g of groups){
+    const legs = state.flights[g.key] || [];
+    legs.forEach((leg, idx)=>{
+      if(!leg || !leg.departDate || !leg.departTime) return;
+
+      const departDate = leg.departDate;
+      const arriveDate = leg.arriveNextDay ? addDays(departDate, 1) : departDate;
+
+      const depMin = timeToMin(leg.departTime) ?? 0;
+      const arrMin = timeToMin(leg.arriveTime) ?? depMin;
+      let durationMin = arrMin - depMin;
+      if(leg.arriveNextDay || durationMin < 0) durationMin += 1440;
+
+      const meta = {
+        group: g.label,
+        idx: idx+1,
+        flightNo: leg.flightNo || '',
+        from: leg.from || '',
+        to: leg.to || '',
+        departTime: leg.departTime || '',
+        arriveTime: leg.arriveTime || '',
+        arriveNextDay: leg.arriveNextDay || (timeToMin(leg.arriveTime) < timeToMin(leg.departTime)),
+        durationMin
+      };
+
+      // show depart-only on depart day if crosses day
+      if(departDate === dateStr){
+        cards.push({ type:'depart', ...meta, arriveDate });
+      }
+      // show arrive-only on arrival day if crosses day
+      if(arriveDate === dateStr && arriveDate !== departDate){
+        cards.push({ type:'arrive', ...meta, departDate });
+      }
+      // if same day, show full card once
+      if(arriveDate === departDate && departDate === dateStr){
+        cards.push({ type:'same', ...meta });
+      }
+    });
+  }
+  return cards;
+}
+
+/* ---------------------------
+   Rendering
+---------------------------- */
+function render(){
+  ensureDays();
+
+  const trip = state.trip;
+  const dcnt = daysCount();
+  const day = state.days[state.selectedDay];
+  const dateStr = day?.date || trip.startDate;
+
+  const headerHtml = `
+    <div class="topbar">
+      <div class="topbar-row">
+        <button class="iconbtn" data-act="back" aria-label="Back">←</button>
+
+        <div class="titlebox">
+          <div class="title">${esc(trip.name)} <span class="muted" style="font-weight:900;opacity:.9;">${dcnt}天</span></div>
+          <div class="subtitle">${esc(trip.startDate)} － ${esc(trip.endDate)}</div>
         </div>
 
-        <div class="md-card e3 p-5 space-y-4 relative">
-          <div class="relative">
-            <div class="md-field">
-              <label>Destination</label>
-              <div class="row">
-                <span class="material-symbols-rounded text-slate-500">pin_drop</span>
-                <input v-model="searchQuery" @input="debounceSearch" placeholder="輸入城市 (例如: 大阪, 巴黎, 曼谷...)">
-                <span v-if="isSearching" class="material-symbols-rounded text-teal-700 animate-spin" style="font-variation-settings:'FILL' 1;">progress_activity</span>
-                <button v-else-if="searchQuery" @click="clearSearch" class="md-icon-btn" style="width:34px;height:34px;">
-                  <span class="material-symbols-rounded text-slate-500">close</span>
-                </button>
-              </div>
-            </div>
-
-            <div v-if="suggestions.length > 0" class="autocomplete-dropdown hide-scroll">
-              <div v-for="(item, idx) in suggestions" :key="idx" @click="selectLocation(item)" class="suggestion-item">
-                <span class="font-black text-slate-900">{{ item.display_name.split(',')[0] }}</span>
-                <span class="text-xs text-slate-500 truncate">{{ item.display_name }}</span>
-              </div>
-            </div>
-
-            <div v-if="detectedCountry" class="mt-2">
-              <div class="flex items-center justify-between gap-2 bg-emerald-50 border border-emerald-100 text-emerald-800 px-3 py-2 rounded-[16px] font-bold">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">check_circle</span>
-                  <span>偵測到：{{ detectedCountry }}</span>
-                </div>
-                <span class="bg-white px-2 py-1 rounded-full border border-emerald-100 font-black">轉為 {{ setup.currency }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="md-field">
-              <label>Start</label>
-              <div class="row">
-                <span class="material-symbols-rounded text-slate-500">event</span>
-                <input v-model="setup.startDate" type="date">
-              </div>
-            </div>
-            <div class="md-field">
-              <label>End</label>
-              <div class="row">
-                <span class="material-symbols-rounded text-slate-500">event_available</span>
-                <input v-model="setup.endDate" type="date">
-              </div>
-            </div>
-          </div>
-
-          <div class="md-field">
-            <label>Currency</label>
-            <div class="row">
-              <span class="material-symbols-rounded text-slate-500">payments</span>
-              <select v-model="setup.currency" id="currencySelect">
-                <optgroup label="亞洲 Asia">
-                  <option value="TWD">TWD 台幣</option>
-                  <option value="JPY">JPY 日幣</option>
-                  <option value="KRW">KRW 韓元</option>
-                  <option value="CNY">CNY 人民幣</option>
-                  <option value="HKD">HKD 港幣</option>
-                  <option value="THB">THB 泰銖</option>
-                  <option value="SGD">SGD 新幣</option>
-                  <option value="VND">VND 越南盾</option>
-                  <option value="MYR">MYR 馬幣</option>
-                  <option value="PHP">PHP 披索</option>
-                  <option value="IDR">IDR 印尼盾</option>
-                </optgroup>
-                <optgroup label="美洲 Americas">
-                  <option value="USD">USD 美金</option>
-                  <option value="CAD">CAD 加幣</option>
-                </optgroup>
-                <optgroup label="歐洲 Europe">
-                  <option value="EUR">EUR 歐元</option>
-                  <option value="GBP">GBP 英鎊</option>
-                  <option value="CHF">CHF 瑞士法郎</option>
-                </optgroup>
-                <optgroup label="大洋洲 Oceania">
-                  <option value="AUD">AUD 澳幣</option>
-                  <option value="NZD">NZD 紐幣</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div class="mt-2 flex items-center justify-between text-xs font-bold text-slate-600">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-rounded text-teal-700">autorenew</span>
-                <span>匯率：每日自動刷新</span>
-              </div>
-              <span class="font-black">1 {{ setup.currency }} ≈ NT$ {{ exchangeRate ? exchangeRate.toFixed(3) : '—' }}</span>
-            </div>
-          </div>
-
-          <button @click="initTrip" class="md-button filled w-full">
-            <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
-            <span>建立行程</span>
+        <div class="seg-actions" aria-label="Top Actions">
+          <button class="${state.view==='plan'?'active':''}" data-view="plan" title="行程">
+            <span class="glyph">📅</span>
+          </button>
+          <button class="${state.view==='translate'?'active':''}" data-view="translate" title="翻譯">
+            <span class="glyph">文A</span>
+          </button>
+          <button class="${state.view==='money'?'active':''}" data-view="money" title="支出">
+            <span class="glyph">$</span>
           </button>
         </div>
+      </div>
 
-        <div class="text-center mt-5 text-white/55 text-xs font-bold">
-          Powered by OpenStreetMap / OSRM / open.er-api.com / Google Translate / ChatGPT
+      <div class="daystrip" aria-label="Days">
+        ${state.days.map((d,i)=>`
+          <div class="daychip ${i===state.selectedDay?'active':''}" data-day="${i}">
+            <div class="date">${esc(d.date.slice(5))}</div>
+            <div class="dnum">D${i+1}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  const planHtml = renderPlan(day);
+  const translateHtml = renderTranslate();
+  const moneyHtml = renderMoney();
+
+  const bodyHtml = `
+    ${headerHtml}
+    <div class="content">
+      ${state.view==='plan' ? planHtml : ''}
+      ${state.view==='translate' ? translateHtml : ''}
+      ${state.view==='money' ? moneyHtml : ''}
+    </div>
+
+    <div class="bottomnav" role="navigation" aria-label="Bottom Navigation">
+      <div class="navrow">
+        <button class="navbtn ${state.view==='plan'?'active':''}" data-view="plan"><span class="glyph">📅</span>行程</button>
+        <button class="navbtn ${state.view==='translate'?'active':''}" data-view="translate"><span class="glyph">文A</span>翻譯</button>
+        <button class="navbtn ${state.view==='money'?'active':''}" data-view="money"><span class="glyph">$</span>支出</button>
+      </div>
+    </div>
+
+    ${state.view==='plan' ? `<button class="fab" data-act="addItem" aria-label="Add">＋</button>` : ''}
+  `;
+
+  appEl.innerHTML = bodyHtml;
+
+  // hide boot screen after successful render
+  const boot = document.getElementById('boot');
+  boot.style.display = 'none';
+}
+
+function renderPlan(day){
+  if(!day) return `<div class="card"><div class="card-hd"><h3>找不到日期</h3></div></div>`;
+
+  const flightCards = getFlightCardsForDay(day.date);
+  const flightHtml = flightCards.length ? `
+    <div class="card flight">
+      <div class="card-hd">
+        <h3>航班</h3>
+        <button class="btn outline" data-act="openFlights">設定</button>
+      </div>
+      <div class="card-bd" style="padding-top:0;">
+        ${flightCards.map(c=>{
+          if(c.type==='depart'){
+            return `
+              <div class="card" style="margin-top:10px;border-radius:18px;">
+                <div class="flight-inner">
+                  <div class="flight-side">
+                    <div class="flight-time">${esc(c.departTime)}</div>
+                    <div class="flight-label">起飛</div>
+                    <div class="flight-air">${esc(c.from)}</div>
+                  </div>
+                  <div class="flight-mid">
+                    <div class="plane">✈︎</div>
+                    <div class="no">${esc(c.flightNo || (c.group+' '+c.idx))}</div>
+                    <div class="dur">${toHM(c.durationMin)}</div>
+                  </div>
+                  <div class="flight-side" style="text-align:right;">
+                    <div class="flight-time muted">—</div>
+                    <div class="flight-label">抵達（隔天）</div>
+                    <div class="flight-air">${esc(c.to)}</div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+          if(c.type==='arrive'){
+            return `
+              <div class="card" style="margin-top:10px;border-radius:18px;">
+                <div class="flight-inner">
+                  <div class="flight-side">
+                    <div class="flight-time muted">—</div>
+                    <div class="flight-label">起飛（前一天）</div>
+                    <div class="flight-air">${esc(c.from)}</div>
+                  </div>
+                  <div class="flight-mid">
+                    <div class="plane">✈︎</div>
+                    <div class="no">${esc(c.flightNo || (c.group+' '+c.idx))}</div>
+                    <div class="dur">${toHM(c.durationMin)}</div>
+                  </div>
+                  <div class="flight-side" style="text-align:right;">
+                    <div class="flight-time">${esc(c.arriveTime)}<span class="arrive-big">抵達 +1日</span></div>
+                    <div class="flight-label">抵達</div>
+                    <div class="flight-air">${esc(c.to)}</div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+          // same-day
+          return `
+            <div class="card" style="margin-top:10px;border-radius:18px;">
+              <div class="flight-inner">
+                <div class="flight-side">
+                  <div class="flight-time">${esc(c.departTime)}</div>
+                  <div class="flight-label">起飛</div>
+                  <div class="flight-air">${esc(c.from)}</div>
+                </div>
+                <div class="flight-mid">
+                  <div class="plane">✈︎</div>
+                  <div class="no">${esc(c.flightNo || (c.group+' '+c.idx))}</div>
+                  <div class="dur">${toHM(c.durationMin)}</div>
+                </div>
+                <div class="flight-side" style="text-align:right;">
+                  <div class="flight-time">${esc(c.arriveTime)}</div>
+                  <div class="flight-label">抵達</div>
+                  <div class="flight-air">${esc(c.to)}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+        <div class="muted" style="margin-top:10px;font-size:12px;font-weight:900;">
+          跨日航班：D1 只顯示起飛，D2 顯示抵達（+1日）。
+        </div>
+      </div>
+    </div>
+  ` : `
+    <div class="card flight">
+      <div class="card-hd">
+        <h3>航班</h3>
+        <button class="btn outline" data-act="openFlights">設定</button>
+      </div>
+      <div class="card-bd muted" style="padding-top:0;font-weight:900;">
+        尚未設定航班（可選填）。
+      </div>
+    </div>
+  `;
+
+  const itemsHtml = day.items.map((it, idx)=>{
+    const located = it.place?.lat!=null && it.place?.lon!=null;
+    const addr = it.place?.address || '';
+    const category = it.category || '景點';
+
+    // route block to next item if both located
+    let routeBlock = '';
+    const next = day.items[idx+1];
+    if(next && located && next.place?.lat!=null && next.place?.lon!=null){
+      const km = haversineKm(it.place.lat, it.place.lon, next.place.lat, next.place.lon);
+      const walk = estimateMinutesByMode(km, 'walk');
+      const drive = estimateMinutesByMode(km, 'drive');
+      const transit = estimateMinutesByMode(km, 'transit');
+      const mode = it.routeMode || state.routeModeDefault || 'walk';
+      const selectedMin = mode==='walk' ? walk : (mode==='drive' ? drive : transit);
+
+      // if user never set travel time, set it to estimate
+      const travelMin = Number(it.travelToNextMin ?? selectedMin);
+
+      routeBlock = `
+        <div class="route">
+          <div class="route-top">
+            <div class="muted" style="font-weight:1000;">路線（到下一個）</div>
+            <button class="btn outline" data-act="openGmaps" data-day="${state.selectedDay}" data-idx="${idx}" data-mode="${mode}">Google Maps</button>
+          </div>
+
+          <div class="route-modes">
+            <div class="modechip ${mode==='walk'?'active':''}" data-act="setRouteMode" data-day="${state.selectedDay}" data-idx="${idx}" data-mode="walk">🚶 ${walk} 分</div>
+            <div class="modechip ${mode==='drive'?'active':''}" data-act="setRouteMode" data-day="${state.selectedDay}" data-idx="${idx}" data-mode="drive">🚗 ${drive} 分</div>
+            <div class="modechip ${mode==='transit'?'active':''}" data-act="setRouteMode" data-day="${state.selectedDay}" data-idx="${idx}" data-mode="transit">🚇 ${transit} 分</div>
+          </div>
+
+          <div class="route-bottom">
+            <div class="pill">
+              <span class="hint">間隔</span>
+              <input type="number" min="0" step="1" value="${travelMin}" data-field="travelToNextMin" data-day="${state.selectedDay}" data-idx="${idx}" /> <span class="muted">min</span>
+            </div>
+            <div class="muted" style="font-weight:900;font-size:12px;">距離約 ${km.toFixed(2)} km（估算）</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const stayMin = Number(it.stayMin ?? 0);
+
+    return `
+      <div class="item" data-day="${state.selectedDay}" data-idx="${idx}">
+        <div class="timebox">
+          <input class="timeinput" type="time" value="${esc(it.start || '')}" data-field="start" />
+          <button class="smallbtn" data-act="quickEditTime">修改</button>
+        </div>
+
+        <div class="meta">
+          <div class="topline">
+            <input class="titleinput" placeholder="行程名稱…" value="${esc(it.title||'')}" data-field="title" />
+            <span class="badge">${esc(category)}</span>
+          </div>
+
+          <div class="place">
+            <span class="pin">📍</span>
+            <input class="tf" style="padding:10px 12px;font-weight:900;" placeholder="地點（輸入店名/景點，會嘗試自動定位）"
+              value="${esc(it.place?.name||'')}" data-field="placeName" />
+          </div>
+
+          <div class="place" style="margin-top:-6px;">
+            <span class="muted" style="font-weight:900;">${located ? '已定位' : '未定位'}</span>
+            <span class="addr">${esc(addr)}</span>
+          </div>
+
+          <div class="item-actions">
+            <div class="pill">
+              <span class="hint">停留</span>
+              <input type="number" min="0" step="5" value="${stayMin}" data-field="stayMin" /> <span class="muted">min</span>
+            </div>
+
+            <div class="switch">
+              <span>鎖定時間</span>
+              <input type="checkbox" ${it.locked ? 'checked':''} data-field="locked" />
+            </div>
+
+            <button class="trash" data-act="removeItem" title="刪除">🗑</button>
+          </div>
+
+          <div class="chips" aria-label="Category Selector">
+            ${CATEGORIES.map(c=>`
+              <div class="chip ${c===category?'active':''}" data-act="setCategory" data-day="${state.selectedDay}" data-idx="${idx}" data-cat="${c}">
+                ${c}
+              </div>
+            `).join('')}
+          </div>
+
+          ${routeBlock}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    ${renderTripSettingsCard()}
+    ${renderQuickTipsCard()}
+    ${renderFlightsCardButtonOnly()}
+    ${flightHtml}
+
+    <div class="card">
+      <div class="card-hd">
+        <h3>當日行程（${esc(day.date)} / D${state.selectedDay+1}）</h3>
+        <button class="btn outline" data-act="addItem">新增行程</button>
+      </div>
+      <div class="card-bd" style="padding-top:0;">
+        ${day.items.length ? itemsHtml : `<div class="muted" style="font-weight:900;">尚未新增行程。按「新增行程」開始。</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderTripSettingsCard(){
+  const t = state.trip;
+  return `
+    <div class="card">
+      <div class="card-hd"><h3>行程基本設定</h3></div>
+      <div class="card-bd">
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">目的地名稱</div>
+            <input class="tf" value="${esc(t.name)}" data-field="trip.name" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <div class="col" style="flex:1;">
+            <div class="label">開始日期</div>
+            <input class="tf" type="date" value="${esc(t.startDate)}" data-field="trip.startDate" />
+          </div>
+          <div class="col" style="flex:1;">
+            <div class="label">結束日期</div>
+            <input class="tf" type="date" value="${esc(t.endDate)}" data-field="trip.endDate" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn tonal" data-act="applyTripDates">套用日期（重建天數）</button>
+          <span class="muted" style="font-weight:900;font-size:12px;">若你改了日期範圍，需要按這個重建 D1~Dn。</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderQuickTipsCard(){
+  return `
+    <div class="card">
+      <div class="card-hd"><h3>自動推時間怎麼用</h3></div>
+      <div class="card-bd muted" style="font-weight:900;">
+        1) 設「停留（min）」與「路線間隔（min）」後，後面行程會自動往後推。<br>
+        2) 開啟「鎖定時間」：這筆行程時間固定，不會被推動。<br>
+        3) 兩點都已定位時，會顯示 🚶/🚗/🚇 估算時間並可一鍵開 Google Maps。
+      </div>
+    </div>
+  `;
+}
+
+function renderFlightsCardButtonOnly(){
+  return `
+    <div class="card" style="display:none;"></div>
+  `;
+}
+
+function renderTranslate(){
+  const tr = state.translate;
+  const quick = [
+    '請問這裡怎麼去？',
+    '我要點餐，謝謝。',
+    '可以刷卡嗎？',
+    '這個多少錢？',
+    '我想要一份不辣。',
+    '請幫我叫計程車。'
+  ];
+  return `
+    <div class="card">
+      <div class="card-hd">
+        <h3>翻譯（免金鑰）</h3>
+        <button class="btn outline" data-act="swapLang">交換</button>
+      </div>
+      <div class="card-bd">
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">來源語言</div>
+            <select class="select" data-field="translate.sl">
+              ${renderLangOptions(tr.sl)}
+            </select>
+          </div>
+          <div class="col" style="flex:1;">
+            <div class="label">目標語言</div>
+            <select class="select" data-field="translate.tl">
+              ${renderLangOptions(tr.tl)}
+            </select>
+          </div>
+        </div>
+
+        <div class="col" style="margin-top:10px;">
+          <div class="label">輸入文字</div>
+          <textarea class="tf" rows="5" data-field="translate.text" placeholder="輸入要翻譯的句子…">${esc(tr.text||'')}</textarea>
+        </div>
+
+        <div class="chips" style="margin-top:10px;">
+          ${quick.map(t=>`<div class="chip" data-act="quickPhrase" data-text="${esc(t)}">${esc(t)}</div>`).join('')}
+        </div>
+
+        <div class="row" style="margin-top:12px;flex-wrap:wrap;">
+          <button class="btn" data-act="openGoogleTranslate">用 Google 翻譯開啟</button>
+          <button class="btn tonal" data-act="openChatGPTTranslate">用 ChatGPT（複製提示詞）</button>
+          <button class="btn outline" data-act="clearTranslate">清空</button>
+        </div>
+
+        <div class="muted" style="margin-top:10px;font-size:12px;font-weight:900;">
+          Google Translate：直接開網頁帶入文字（不吃 API、不用金鑰）。<br>
+          ChatGPT：不走金鑰，改成「複製提示詞」→ 自動開 ChatGPT 網頁 → 你貼上送出。
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLangOptions(selected){
+  const langs = [
+    ['zh-TW','繁中'],
+    ['en','英文'],
+    ['ja','日文'],
+    ['ko','韓文'],
+    ['th','泰文'],
+    ['vi','越南文'],
+    ['fr','法文'],
+    ['de','德文'],
+    ['es','西班牙文']
+  ];
+  return langs.map(([v,lab])=>`<option value="${v}" ${v===selected?'selected':''}>${lab}</option>`).join('');
+}
+
+function renderMoney(){
+  const m = state.money;
+  const totalsByDay = new Array(state.days.length).fill(0);
+  let total = 0;
+
+  for(const e of m.expenses){
+    const amt = Number(e.amount || 0);
+    total += amt;
+    if(Number.isInteger(e.dayIndex) && totalsByDay[e.dayIndex]!=null){
+      totalsByDay[e.dayIndex] += amt;
+    }
+  }
+
+  const twdTotal = total * Number(m.exchangeRate || 0);
+
+  return `
+    <div class="card">
+      <div class="card-hd">
+        <h3>總支出 Total</h3>
+        <button class="btn outline" data-act="refreshRate">更新匯率</button>
+      </div>
+
+      <div class="card-bd">
+        <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+          <div style="font-weight:1100;font-size:34px;letter-spacing:.3px;">
+            ${esc(m.currency)} ${total.toFixed(2)}
+          </div>
+          <div class="muted" style="font-weight:1000;">≈ NT$ ${Math.round(twdTotal).toLocaleString()}</div>
+        </div>
+
+        <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+          <div class="col" style="flex:1;min-width:160px;">
+            <div class="label">匯率（1 ${esc(m.currency)} → TWD）</div>
+            <input class="tf" type="number" step="0.0001" value="${esc(m.exchangeRate)}" data-field="money.exchangeRate" ${m.autoRate?'disabled':''} />
+          </div>
+          <div class="col" style="width:140px;">
+            <div class="label">幣別</div>
+            <input class="tf" value="${esc(m.currency)}" data-field="money.currency" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+          <div class="switch">
+            <span>自動更新（每天一次）</span>
+            <input type="checkbox" ${m.autoRate?'checked':''} data-field="money.autoRate" />
+          </div>
+          <div class="muted" style="font-weight:900;font-size:12px;">
+            上次更新：${esc(m.lastRateDate || '尚未')}
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div style="font-weight:1000;margin-bottom:8px;">每日金額（依 D1~Dn）</div>
+        <div class="card" style="box-shadow:none;border:1px solid rgba(0,0,0,.06);">
+          <div class="card-bd" style="padding-top:14px;">
+            ${totalsByDay.map((v,i)=>`
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.04);">
+                <div style="font-weight:1000;">D${i+1} <span class="muted" style="font-weight:900;">(${esc(state.days[i].date.slice(5))})</span></div>
+                <div style="font-weight:1100;">${esc(m.currency)} ${v.toFixed(2)}</div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <template v-else>
-      <header class="md-top-appbar shrink-0 z-20">
-        <div class="px-4 pt-4 pb-3 flex items-center justify-between">
-          <div class="flex items-center gap-2 min-w-0">
-            <button class="md-icon-btn" @click="hasStarted=false">
-              <span class="material-symbols-rounded">arrow_back</span>
-            </button>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2 min-w-0">
-                <h1 class="md-appbar-title text-lg truncate">{{ setup.destination }}</h1>
-                <span class="text-[11px] font-black bg-white/18 border border-white/18 px-2 py-1 rounded-full text-white/95">{{ totalDays }}天</span>
-              </div>
-              <p class="text-[11px] text-white/80 font-bold truncate mt-0.5">
-                {{ setup.startDate.replace(/-/g, '/') }} - {{ setup.endDate.replace(/-/g, '/') }}
-              </p>
-            </div>
+    <div class="card">
+      <div class="card-hd"><h3>新增支出</h3></div>
+      <div class="card-bd">
+        <div class="row" style="flex-wrap:wrap;">
+          <div class="col" style="flex:1;min-width:180px;">
+            <div class="label">項目</div>
+            <input class="tf" id="expTitle" placeholder="例如：晚餐、門票、交通…" />
           </div>
-
-          <button class="md-icon-btn" @click="forceRefreshFx" title="立即更新匯率">
-            <span class="material-symbols-rounded">sync</span>
-          </button>
-        </div>
-
-        <div class="flex overflow-x-auto hide-scroll px-3 pb-3 gap-2">
-          <button v-for="(day, index) in days" :key="index"
-                  @click="currentDayIdx=index"
-                  class="day-chip shrink-0"
-                  :class="{active: currentDayIdx===index}">
-            <span class="text-[11px] font-bold opacity-85">{{ day.shortDate }}</span>
-            <span class="text-sm font-black">D{{ index+1 }}</span>
-          </button>
-
-          <button @click="addDay" class="day-chip shrink-0" style="border-style:dashed;">
-            <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">add</span>
-            <span class="text-[11px] font-black">新增</span>
-          </button>
-        </div>
-      </header>
-
-      <main class="flex-1 overflow-y-auto relative hide-scroll bg-slate-50" style="padding-bottom: 96px;">
-        <!-- PLAN -->
-        <div v-if="viewMode==='plan'" class="p-4">
-          <div class="md-card p-4 mb-4">
-            <div class="text-xl font-black text-slate-900">{{ currentDay.date }}</div>
-            <input v-model="currentDay.title" class="mt-2 w-full bg-transparent border-b border-slate-200 focus:outline-none focus:border-teal-600 text-sm font-bold text-slate-600" placeholder="輸入當日主題...">
-          </div>
-
-          <!-- Flights -->
-          <div class="mb-6">
-            <div v-if="flightsForDay.length>0" class="space-y-3">
-              <div v-for="card in flightsForDay" :key="card.key"
-                   class="relative rounded-[24px] text-white shadow-lg overflow-hidden"
-                   style="background: linear-gradient(90deg, #2563EB, #0EA5A5);">
-                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-50 rounded-full z-10"></div>
-                <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-50 rounded-full z-10"></div>
-
-                <div class="p-4 relative z-0">
-                  <button @click="removeFlight(card.segId)"
-                          class="absolute top-2 right-2 text-white/70 hover:text-white rounded-full p-2 transition hover:bg-white/15">
-                    <span class="material-symbols-rounded">delete</span>
-                  </button>
-
-                  <div class="flex items-center justify-between gap-3">
-                    <div class="w-[38%]">
-                      <div class="text-[10px] opacity-70 font-black tracking-wider">起飛</div>
-                      <input v-if="card.type!=='arr'" v-model="flightById(card.segId).depTime" type="time"
-                             class="text-2xl font-black bg-transparent border-b border-white/30 w-full text-left text-white placeholder-white/50 focus:outline-none focus:border-white font-mono p-0 mt-1">
-                      <div v-else class="text-2xl font-black font-mono mt-1 opacity-60">—</div>
-
-                      <input v-if="card.type!=='arr'" v-model="flightById(card.segId).depAirport"
-                             class="text-sm font-black opacity-90 bg-transparent border-none w-full text-white/90 placeholder-white/50 focus:ring-0 uppercase p-0 mt-1"
-                             placeholder="TPE">
-                      <div v-else class="text-xs opacity-70 mt-2">From {{ flightById(card.segId).depAirport || '---' }}</div>
-                    </div>
-
-                    <div class="w-[24%] flex flex-col items-center justify-center">
-                      <span class="material-symbols-rounded text-2xl" style="transform: rotate(90deg);">flight</span>
-                      <input v-model="flightById(card.segId).flightNo"
-                             class="text-[10px] font-mono tracking-widest opacity-90 bg-transparent border-none text-center w-full text-white placeholder-white/50 focus:ring-0 uppercase p-0 mt-1"
-                             placeholder="BR198">
-
-                      <div class="mt-2 px-3 py-2 rounded-[16px] border border-white/20 bg-black/20 text-center">
-                        <div class="text-[10px] opacity-85 font-black">飛行時間</div>
-                        <div class="text-sm font-black font-mono">{{ formatDuration(flightDurationMin(card.segId)) }}</div>
-                      </div>
-                    </div>
-
-                    <div class="w-[38%] text-right">
-                      <div class="text-[10px] opacity-70 font-black tracking-wider flex items-center justify-end gap-2">
-                        <span>抵達</span>
-                        <select v-if="card.type!=='arr'"
-                                v-model.number="flightById(card.segId).arrOffset"
-                                class="appearance-none bg-black/22 text-white text-xs font-black rounded-full border border-white/20 py-1 px-3 text-center focus:ring-0 cursor-pointer hover:bg-black/28">
-                          <option :value="0" class="text-slate-800">同日</option>
-                          <option :value="1" class="text-slate-800">+1日</option>
-                          <option :value="2" class="text-slate-800">+2日</option>
-                        </select>
-                        <span v-else class="text-xs bg-black/18 px-3 py-1 rounded-full border border-white/20 font-black">
-                          +{{ flightById(card.segId).arrOffset }}日
-                        </span>
-                      </div>
-
-                      <input v-if="card.type!=='dep'" v-model="flightById(card.segId).arrTime" type="time"
-                             class="text-2xl font-black bg-transparent border-b border-white/30 w-full text-right text-white placeholder-white/50 focus:outline-none focus:border-white font-mono p-0 mt-1">
-                      <div v-else class="mt-2 text-base font-black bg-black/18 inline-block px-3 py-2 rounded-full border border-white/20">
-                        抵達日顯示
-                      </div>
-
-                      <input v-if="card.type!=='dep'" v-model="flightById(card.segId).arrAirport"
-                             class="text-sm font-black opacity-90 bg-transparent border-none w-full text-white/90 placeholder-white/50 focus:ring-0 uppercase p-0 mt-1"
-                             placeholder="NRT">
-                      <div v-else class="text-xs opacity-70 mt-2">To {{ flightById(card.segId).arrAirport || '---' }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <button @click="addFlightSegment" class="md-button tonal w-full">
-                <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">add</span>
-                <span>新增航班（可多段/轉機）</span>
-              </button>
-            </div>
-
-            <button v-else @click="addFlightSegment" class="md-button outlined w-full">
-              <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">flight_takeoff</span>
-              <span>新增航班（可多段）</span>
-            </button>
-          </div>
-
-          <!-- Items -->
-          <div class="relative pl-2 space-y-0">
-            <div v-for="(item, idx) in currentDay.items" :key="item.id" class="relative group">
-              <div class="relative z-10 md-card p-3 flex gap-3 mb-2 hover:shadow-md transition"
-                   :class="item.conflict ? 'ring-2 ring-rose-200 border-rose-100' : ''">
-
-                <div class="flex flex-col items-center w-20 shrink-0 justify-center rounded-[18px] border border-slate-200"
-                     style="background: var(--md-sys-color-surface-container);">
-                  <button @click="openWheel('time', item.id)" class="w-full py-2 hover:bg-white/70 transition rounded-t-[18px]">
-                    <div class="text-xl font-black text-slate-900 font-mono leading-none">{{ item.time || '--:--' }}</div>
-                    <div class="text-[10px] text-slate-500 mt-1 font-bold">修改</div>
-                  </button>
-                  <button @click="toggleLock(item)" class="w-full py-2 border-t border-slate-200 flex items-center justify-center gap-2 text-[11px] font-black rounded-b-[18px]"
-                          :class="item.locked ? 'text-teal-700 bg-teal-50' : 'text-slate-500 bg-white'">
-                    <i class="fa-solid" :class="item.locked ? 'fa-lock' : 'fa-lock-open'"></i>
-                    <span>{{ item.locked ? '已鎖定' : '未鎖定' }}</span>
-                  </button>
-                </div>
-
-                <div class="flex-1 min-w-0 flex flex-col justify-center">
-                  <div class="flex items-start justify-between gap-2">
-                    <input v-model="item.activity"
-                           class="font-black text-slate-900 bg-transparent border-none p-0 focus:ring-0 w-full placeholder-slate-300"
-                           placeholder="行程名稱...">
-
-                    <button @click="openWheel('cat', item.id)" class="md-chip shrink-0"
-                            :class="item.category ? 'active' : ''"
-                            style="padding: 8px 10px;">
-                      <i class="fa-solid" :class="getCatIcon(item.category)"></i>
-                      <span>{{ item.category }}</span>
-                      <span class="material-symbols-rounded" style="font-size:18px;">arrow_drop_down</span>
-                    </button>
-                  </div>
-
-                  <div class="flex items-center gap-2 mt-2">
-                    <span class="material-symbols-rounded text-teal-700" style="font-size:18px;">location_on</span>
-                    <input v-model="item.location" @blur="tryGeocode(item)"
-                           class="flex-1 text-xs text-slate-600 bg-transparent border-none p-0 focus:ring-0 placeholder-slate-300"
-                           placeholder="地點（輸入店名/景點，會自動定位）">
-
-                    <button v-if="!item.lat && item.location"
-                            @click="tryGeocode(item)"
-                            class="md-button outlined"
-                            style="padding: 8px 10px; font-size:11px;">
-                      定位
-                    </button>
-                    <span v-else-if="item.lat"
-                          class="md-chip active"
-                          style="padding: 8px 10px; font-size:11px;">
-                      已定位
-                    </span>
-                  </div>
-
-                  <div v-if="item.locationAddress" class="text-[10px] text-slate-500 truncate mt-1">
-                    {{ item.locationAddress }}
-                  </div>
-
-                  <div class="mt-3 flex items-center gap-2 flex-wrap">
-                    <button @click="openWheel('stay', item.id)" class="md-chip">
-                      <span class="material-symbols-rounded text-slate-600" style="font-size:18px;">schedule</span>
-                      <span>停留 · {{ stayLabel(item.stay) }}</span>
-                      <span class="material-symbols-rounded" style="font-size:18px;">arrow_drop_down</span>
-                    </button>
-
-                    <span v-if="item.conflict" class="md-chip"
-                          style="background:#FFF1F2;border-color:#FECDD3;color:#9F1239;">
-                      時間衝突 +{{ item.conflictOverMin }}min
-                    </span>
-                  </div>
-                </div>
-
-                <button @click="removeItem(idx)" class="md-icon-btn text-slate-500 hover:text-rose-600" style="width:36px;height:36px;">
-                  <span class="material-symbols-rounded">delete</span>
-                </button>
-              </div>
-
-              <div v-if="idx < currentDay.items.length - 1" class="relative py-3 min-h-[96px] flex items-start pl-6">
-                <div class="transit-line"></div>
-
-                <div class="relative z-10 w-full">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <div @click="openWheel('transit', item.id)" class="md-chip">
-                      <i class="fa-solid" :class="getTransIcon(item.transport?.mode)"></i>
-                      <span class="font-black font-mono">{{ getTransLabel(item.transport) }}</span>
-                      <span class="material-symbols-rounded" style="font-size:18px;">arrow_drop_down</span>
-                    </div>
-
-                    <button @click="calcRoute(idx)"
-                            :disabled="!canRoute(idx)"
-                            class="md-button"
-                            :class="canRoute(idx) ? 'tonal' : ''"
-                            :style="!canRoute(idx) ? 'background:#EEF2F7;color:#94a3b8;border:1px solid #E2E8F0;' : 'padding:10px 14px;'">
-                      <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">route</span>
-                      <span>路線</span>
-                    </button>
-                  </div>
-
-                  <div v-if="item.routeOptions" class="flex flex-wrap gap-2 pl-1 mt-2 pb-1">
-                    <div class="md-chip">
-                      <span class="material-symbols-rounded">directions_walk</span>
-                      <span>步行 {{ item.routeOptions.walkMin }} 分鐘</span>
-                    </div>
-                    <div class="md-chip">
-                      <span class="material-symbols-rounded">directions_car</span>
-                      <span>開車 {{ item.routeOptions.driveMin }} 分鐘</span>
-                    </div>
-                    <a :href="item.routeOptions.gmapsUrl" target="_blank" class="md-chip">
-                      <i class="fa-brands fa-google"></i>
-                      <span>Google Maps</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button @click="addItem" class="md-button filled w-full mt-4">
-            <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">add_circle</span>
-            <span>新增行程</span>
-          </button>
-        </div>
-
-        <!-- TRANSLATE -->
-        <div v-if="viewMode==='translate'" class="p-4">
-          <div class="md-card p-4">
-            <div class="flex items-center justify-between">
-              <div class="text-lg font-black text-slate-900 flex items-center gap-2">
-                <span class="material-symbols-rounded text-teal-700" style="font-variation-settings:'FILL' 1;">translate</span>
-                <span>翻譯工具</span>
-              </div>
-              <button @click="swapLang" class="md-button tonal" style="padding:10px 14px;">
-                <span class="material-symbols-rounded">swap_horiz</span>
-                <span>交換</span>
-              </button>
-            </div>
-
-            <div class="mt-4">
-              <div class="text-[10px] font-black text-slate-500 mb-2 uppercase">來源語言</div>
-              <div class="flex flex-wrap gap-2">
-                <button v-for="l in langPillsSource" :key="l.code" @click="translator.sl=l.code"
-                        class="md-chip" :class="{active: translator.sl===l.code}">
-                  <span class="font-black">{{ l.label }}</span>
-                  <span class="text-[10px] opacity-70">{{ l.code }}</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-3">
-              <div class="text-[10px] font-black text-slate-500 mb-2 uppercase">目標語言</div>
-              <div class="flex flex-wrap gap-2">
-                <button v-for="l in langPillsTarget" :key="l.code" @click="translator.tl=l.code"
-                        class="md-chip" :class="{active: translator.tl===l.code}">
-                  <span class="font-black">{{ l.label }}</span>
-                  <span class="text-[10px] opacity-70">{{ l.code }}</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <div class="text-[10px] font-black text-slate-500 mb-2 uppercase">ChatGPT 語氣</div>
-              <div class="flex flex-wrap gap-2">
-                <button v-for="t in tonePills" :key="t.key" @click="translator.tone=t.key"
-                        class="md-chip" :class="{active: translator.tone===t.key}">
-                  <i class="fa-solid" :class="t.icon"></i>
-                  <span>{{ t.label }}</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-4 md-field">
-              <label>Text</label>
-              <div class="row items-start">
-                <span class="material-symbols-rounded text-slate-500" style="margin-top:2px;">edit_note</span>
-                <textarea v-model="translator.text" rows="7" placeholder="貼上要翻譯的內容"></textarea>
-              </div>
-            </div>
-
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button v-for="p in quickPhrases" :key="p" @click="appendPhrase(p)" class="md-chip">{{ p }}</button>
-            </div>
-
-            <div class="mt-4 grid grid-cols-2 gap-2">
-              <button @click="openGoogleTranslate"
-                      :disabled="!translator.text.trim()"
-                      class="md-button filled w-full"
-                      :style="!translator.text.trim() ? 'opacity:.45;pointer-events:none;' : ''">
-                <i class="fa-brands fa-google"></i>
-                <span>Google 翻譯</span>
-              </button>
-
-              <button @click="copyChatGPTPrompt"
-                      :disabled="!translator.text.trim()"
-                      class="md-button tonal w-full"
-                      :style="!translator.text.trim() ? 'opacity:.45;pointer-events:none;' : ''">
-                <span class="material-symbols-rounded">content_copy</span>
-                <span>複製提示</span>
-              </button>
-            </div>
-
-            <div class="mt-2 grid grid-cols-2 gap-2">
-              <button @click="openChatGPT" class="md-button outlined w-full">
-                <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">chat</span>
-                <span>開啟 ChatGPT</span>
-              </button>
-              <button @click="clearTranslate" class="md-button outlined w-full">
-                <span class="material-symbols-rounded">clear</span>
-                <span>清空</span>
-              </button>
-            </div>
-
-            <div class="mt-4 md-card p-3" style="background:var(--md-sys-color-surface-container);">
-              <div class="flex items-center justify-between">
-                <div class="text-[11px] font-black text-slate-600">ChatGPT 提示預覽</div>
-                <button @click="copyChatGPTPrompt" class="md-button tonal" style="padding:8px 10px;font-size:11px;">
-                  再複製
-                </button>
-              </div>
-              <pre class="mt-2 text-[11px] text-slate-700 whitespace-pre-wrap break-words font-mono">{{ chatgptPrompt }}</pre>
-            </div>
-
-            <div class="mt-3 text-[11px] text-slate-500 font-bold">
-              免金鑰：先「複製提示」→「開啟 ChatGPT」→ 貼上送出。
-            </div>
+          <div class="col" style="width:150px;">
+            <div class="label">金額（${esc(m.currency)}）</div>
+            <input class="tf" id="expAmount" type="number" step="0.01" placeholder="0" />
           </div>
         </div>
 
-        <!-- MONEY -->
-        <div v-if="viewMode==='money'" class="p-4">
-          <div class="md-card e3 p-5 mb-6 text-center"
-               style="background: linear-gradient(135deg, #0F766E, #0EA5A5); color:white; border:1px solid rgba(255,255,255,0.18);">
-            <div class="flex items-start justify-end mb-1">
-              <button @click="forceRefreshFx" class="md-chip" style="background:rgba(255,255,255,0.16); border-color:rgba(255,255,255,0.18); color:white;">
-                <span class="material-symbols-rounded">sync</span>
-                <span>更新匯率</span>
-              </button>
-            </div>
-
-            <div class="text-sm opacity-85 mb-1 font-bold">總支出 Total</div>
-            <div class="text-4xl font-black font-mono">{{ setup.currency }} {{ totalExpense.toLocaleString() }}</div>
-            <div class="text-lg font-black mt-2" style="color: rgba(255,255,255,0.88);">
-              ≈ NT$ {{ exchangeRate ? Math.round(totalExpense * exchangeRate).toLocaleString() : '—' }}
-            </div>
-            <div class="text-[11px] mt-2 font-black" style="color: rgba(255,255,255,0.82);">
-              1 {{ setup.currency }} ≈ NT$ {{ exchangeRate ? exchangeRate.toFixed(3) : '—' }}
-              <span v-if="fx.status==='error'" class="ml-2 px-2 py-0.5 rounded-full" style="background:rgba(244,63,94,0.22); border:1px solid rgba(255,255,255,0.16);">
-                匯率抓取失敗
-              </span>
-            </div>
-
-            <div class="mt-4 md-card p-3 text-left" style="background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.18);">
-              <div class="flex items-center justify-between mb-2">
-                <div class="text-xs font-black" style="color:rgba(255,255,255,0.92);">每日支出</div>
-                <div class="text-[10px] font-bold" style="color:rgba(255,255,255,0.74);">點選可跳到該天</div>
-              </div>
-              <div class="flex gap-2 overflow-x-auto hide-scroll pb-1">
-                <button v-for="(amt, idx) in dailyExpenseMap" :key="idx"
-                        @click="currentDayIdx=idx"
-                        class="md-chip"
-                        :class="{active: currentDayIdx===idx}"
-                        style="background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.18); color:white;">
-                  <div class="text-left">
-                    <div class="text-[10px] font-black opacity-90">{{ days[idx]?.shortDate || ('D'+(idx+1)) }}</div>
-                    <div class="text-sm font-black font-mono">{{ setup.currency }} {{ (amt||0).toLocaleString() }}</div>
-                    <div class="text-[10px] font-mono opacity-80">≈ NT$ {{ exchangeRate ? Math.round((amt||0) * exchangeRate).toLocaleString() : '—' }}</div>
-                  </div>
-                </button>
-              </div>
-            </div>
+        <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+          <div class="col" style="width:150px;">
+            <div class="label">歸屬日期</div>
+            <select class="select" id="expDay">
+              ${state.days.map((d,i)=>`<option value="${i}" ${i===state.selectedDay?'selected':''}>D${i+1} (${d.date.slice(5)})</option>`).join('')}
+            </select>
           </div>
-
-          <div class="md-card p-4 mb-4">
-            <h3 class="text-[11px] font-black text-slate-500 uppercase mb-2">新增支出（記在當天 D{{ currentDayIdx+1 }}）</h3>
-
-            <div class="grid grid-cols-3 gap-2 mb-2">
-              <div class="md-field col-span-2">
-                <label>Item</label>
-                <div class="row">
-                  <span class="material-symbols-rounded text-slate-500">receipt_long</span>
-                  <input v-model="newExpense.item" placeholder="項目">
-                </div>
-              </div>
-              <div class="md-field">
-                <label>Amount</label>
-                <div class="row">
-                  <span class="material-symbols-rounded text-slate-500">payments</span>
-                  <input v-model.number="newExpense.amount" type="number" placeholder="金額" class="font-mono">
-                </div>
-              </div>
-            </div>
-
-            <button @click="addExpense" class="md-button filled w-full">
-              <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">add</span>
-              <span>加入</span>
-            </button>
-          </div>
-
-          <div class="space-y-2">
-            <div v-for="(exp, i) in expenses" :key="i" class="md-card p-3 flex items-center justify-between">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-teal-800"
-                     style="background:var(--md-sys-color-primary-container); border:1px solid rgba(13,148,136,0.18);">
-                  {{ i+1 }}
-                </div>
-                <div class="min-w-0">
-                  <div class="font-black text-slate-900 truncate">{{ exp.item }}</div>
-                  <div class="text-[10px] text-slate-500 font-bold">D{{ (exp.dayIdx ?? 0)+1 }} · {{ days[exp.dayIdx]?.shortDate || '' }}</div>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="font-mono font-black text-slate-700">{{ setup.currency }} {{ exp.amount }}</span>
-                <button @click="removeExpense(i)" class="md-icon-btn text-slate-500 hover:text-rose-600" style="width:36px;height:36px;">
-                  <span class="material-symbols-rounded">close</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <button class="btn" data-act="addExpense">＋ 加入</button>
+          <button class="btn outline" data-act="clearExpenses">清空所有支出</button>
         </div>
 
-        <transition name="fade">
-          <div v-if="toast.show" class="toast">
-            <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">check_circle</span>
-            <span>{{ toast.text }}</span>
-          </div>
-        </transition>
-      </main>
+        <div class="hr"></div>
 
-      <nav class="md-bottom-nav">
-        <div class="flex gap-2">
-          <button class="md-nav-item" :class="{active: viewMode==='plan'}" @click="viewMode='plan'">
-            <span class="material-symbols-rounded">calendar_month</span>
-            <span>行程</span>
-          </button>
-          <button class="md-nav-item" :class="{active: viewMode==='translate'}" @click="viewMode='translate'">
-            <span class="material-symbols-rounded">translate</span>
-            <span>翻譯</span>
-          </button>
-          <button class="md-nav-item" :class="{active: viewMode==='money'}" @click="viewMode='money'">
-            <span class="material-symbols-rounded">payments</span>
-            <span>支出</span>
-          </button>
-        </div>
-      </nav>
-    </template>
-
-    <!-- WHEEL -->
-    <transition name="fade">
-      <div v-if="wheelState.show" class="absolute inset-0 z-50 flex items-end bg-black/40 backdrop-blur-[2px]" @click.self="closeWheel">
-        <transition name="slide-up">
-          <div v-if="wheelState.show" class="md-sheet w-full p-5 pb-8">
-            <div class="md-sheet-handle"></div>
-
-            <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
-              <div>
-                <h3 class="text-lg font-black text-slate-900">
-                  {{ wheelState.mode === 'time' ? '設定開始時間'
-                    : (wheelState.mode === 'stay' ? '設定停留時間'
-                    : (wheelState.mode === 'cat' ? '設定分類' : '設定交通/休息')) }}
-                </h3>
-                <p class="text-xs text-slate-500 font-bold">滑動/點選</p>
+        <div style="font-weight:1000;margin-bottom:8px;">支出清單</div>
+        ${m.expenses.length ? `
+          ${m.expenses.map(e=>`
+            <div class="item" style="margin-bottom:10px;">
+              <div class="timebox" style="width:78px;flex-basis:78px;">
+                <div class="badge">D${(e.dayIndex||0)+1}</div>
               </div>
-              <button @click="saveWheel" class="md-button filled" style="padding:10px 14px;">
-                <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1;">done</span>
-                <span>確認</span>
-              </button>
-            </div>
-
-            <div v-if="wheelState.mode === 'transit'" class="grid grid-cols-4 gap-2 mb-6">
-              <button v-for="m in ['car','walk','transit','rest']" :key="m" @click="wheelState.transMode=m"
-                      class="md-chip w-full justify-center"
-                      :class="{active: wheelState.transMode===m}">
-                <i class="fa-solid text-sm" :class="getTransIcon(m)"></i>
-                <span>{{ {'car':'開車','walk':'步行','transit':'大眾','rest':'休息'}[m] }}</span>
-              </button>
-            </div>
-
-            <div v-if="wheelState.mode === 'cat'" class="grid grid-cols-3 gap-2 mb-2">
-              <button v-for="c in categories" :key="c"
-                      @click="wheelState.tempCat=c"
-                      class="md-chip w-full justify-center"
-                      :class="{active: wheelState.tempCat===c}">
-                <i class="fa-solid" :class="getCatIcon(c)"></i>
-                <span>{{ c }}</span>
-              </button>
-            </div>
-
-            <div v-if="wheelState.mode !== 'cat'" class="wheel-container">
-              <div class="wheel-highlight"></div>
-              <div class="wheel-col" ref="wheelHour" @scroll="onScroll('hour')">
-                <div class="wheel-item" v-for="h in hoursList" :key="h" :class="{selected: wheelState.tempH===h}">{{ h }}</div>
-              </div>
-              <div class="flex items-center justify-center font-black text-slate-300 pb-1">:</div>
-              <div class="wheel-col" ref="wheelMinute" @scroll="onScroll('minute')">
-                <div class="wheel-item" v-for="m in minutesList" :key="m" :class="{selected: wheelState.tempM===m}">{{ m }}</div>
+              <div class="meta">
+                <div class="topline">
+                  <div style="font-weight:1100;font-size:16px;">${esc(e.title)}</div>
+                  <div style="font-weight:1100;">${esc(m.currency)} ${Number(e.amount||0).toFixed(2)}</div>
+                </div>
+                <button class="trash" data-act="removeExpense" data-id="${esc(e.id)}">🗑 刪除</button>
               </div>
             </div>
-
-            <div v-if="wheelState.mode === 'stay'" class="text-[11px] text-slate-600 mt-2 font-bold">
-              會依序自動推進下一個時間（遇到「鎖定時間」則不改動，並顯示衝突提示）。
-            </div>
-          </div>
-        </transition>
+          `).join('')}
+        ` : `<div class="muted" style="font-weight:900;">尚無支出。</div>`}
       </div>
-    </transition>
+    </div>
+  `;
+}
 
-  </div>
+/* ---------------------------
+   Events (delegation)
+---------------------------- */
+document.addEventListener('click', async (ev)=>{
+  const t = ev.target;
 
-  <script>
-    // Service Worker 註冊（PWA）
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          await navigator.serviceWorker.register('./sw.js', { scope: './' });
-        } catch (e) {
-          console.warn('SW register failed:', e);
-        }
-      });
+  // switch view
+  const viewBtn = t.closest('[data-view]');
+  if(viewBtn){
+    state.view = viewBtn.getAttribute('data-view');
+    saveState();
+    render();
+    if(state.view==='money') refreshRateIfNeeded(false);
+    return;
+  }
+
+  // day select
+  const dayChip = t.closest('[data-day]');
+  if(dayChip && dayChip.classList.contains('daychip')){
+    state.selectedDay = Number(dayChip.getAttribute('data-day'));
+    saveState();
+    render();
+    return;
+  }
+
+  const actEl = t.closest('[data-act]');
+  if(!actEl) return;
+  const act = actEl.getAttribute('data-act');
+
+  if(act==='applyTripDates'){
+    // rebuild days
+    ensureDays(); // first align
+    const n = daysBetweenInclusive(state.trip.startDate, state.trip.endDate);
+    const newDays = [];
+    for(let i=0;i<n;i++){
+      const date = addDays(state.trip.startDate, i);
+      const existing = state.days.find(d=>d.date===date);
+      newDays.push({ date, items: existing?.items || [] });
     }
+    state.days = newDays;
+    state.selectedDay = Math.min(state.selectedDay, n-1);
+    saveState();
+    render();
+    snack('已套用日期範圍');
+    return;
+  }
 
-    const { createApp, ref, computed, nextTick, reactive } = Vue;
+  if(act==='addItem'){
+    const day = state.days[state.selectedDay];
+    const start = setDefaultTimesForNewItem(state.selectedDay);
+    day.items.push({
+      id: uid(),
+      title: '',
+      start,
+      stayMin: 60,
+      locked: false,
+      category: '景點',
+      place: { name:'', address:'', lat:null, lon:null },
+      routeMode: state.routeModeDefault,
+      travelToNextMin: 0
+    });
+    // push times from last item (no need)
+    saveState();
+    render();
+    snack('已新增行程');
+    return;
+  }
 
-    const countryCurrencyMap = {
-      'tw': 'TWD', 'jp': 'JPY', 'kr': 'KRW', 'cn': 'CNY', 'hk': 'HKD', 'th': 'THB', 'vn': 'VND',
-      'sg': 'SGD', 'my': 'MYR', 'ph': 'PHP', 'id': 'IDR', 'us': 'USD', 'ca': 'CAD', 'au': 'AUD',
-      'nz': 'NZD', 'gb': 'GBP', 'ch': 'CHF',
-      'fr': 'EUR', 'de': 'EUR', 'it': 'EUR', 'es': 'EUR', 'pt': 'EUR', 'nl': 'EUR', 'be': 'EUR',
-      'at': 'EUR', 'gr': 'EUR', 'fi': 'EUR', 'ie': 'EUR'
-    };
+  if(act==='removeItem'){
+    const wrap = actEl.closest('.item');
+    const dayIndex = Number(wrap.getAttribute('data-day'));
+    const idx = Number(wrap.getAttribute('data-idx'));
+    const day = state.days[dayIndex];
+    day.items.splice(idx, 1);
+    // recalc from previous
+    recalcFrom(dayIndex, Math.max(0, idx-1));
+    render();
+    snack('已刪除');
+    return;
+  }
 
-    createApp({
-      setup() {
-        const hasStarted = ref(false);
-        const viewMode = ref('plan');
-        const currentDayIdx = ref(0);
+  if(act==='setCategory'){
+    const dayIndex = Number(actEl.getAttribute('data-day'));
+    const idx = Number(actEl.getAttribute('data-idx'));
+    const cat = actEl.getAttribute('data-cat');
+    state.days[dayIndex].items[idx].category = cat;
+    saveState();
+    render();
+    return;
+  }
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        const setup = ref({ destination: '', startDate: todayStr, endDate: todayStr, currency: 'JPY' });
+  if(act==='setRouteMode'){
+    const dayIndex = Number(actEl.getAttribute('data-day'));
+    const idx = Number(actEl.getAttribute('data-idx'));
+    const mode = actEl.getAttribute('data-mode');
+    const day = state.days[dayIndex];
+    const it = day.items[idx];
+    it.routeMode = mode;
 
-        const days = ref([]);
-        const totalDays = ref(0);
+    // when change mode, set travel time to estimate and auto-push
+    const next = day.items[idx+1];
+    if(next && it.place?.lat!=null && next.place?.lat!=null){
+      const km = haversineKm(it.place.lat, it.place.lon, next.place.lat, next.place.lon);
+      it.travelToNextMin = estimateMinutesByMode(km, mode);
+      recalcFrom(dayIndex, idx+1);
+    }
+    saveState();
+    render();
+    return;
+  }
 
-        // Toast
-        const toast = reactive({ show:false, text:'' });
-        const showToast = (text) => {
-          toast.text = text;
-          toast.show = true;
-          setTimeout(() => toast.show = false, 1400);
-        };
+  if(act==='openGmaps'){
+    const dayIndex = Number(actEl.getAttribute('data-day'));
+    const idx = Number(actEl.getAttribute('data-idx'));
+    const mode = actEl.getAttribute('data-mode') || 'walk';
+    const day = state.days[dayIndex];
+    const it = day.items[idx];
+    const next = day.items[idx+1];
+    if(!(it?.place?.lat!=null && next?.place?.lat!=null)){
+      snack('請先完成兩點定位');
+      return;
+    }
+    const url = googleMapsDirectionsUrl(it.place, next.place, mode);
+    window.open(url, '_blank');
+    return;
+  }
 
-        // FX (daily cache)
-        const fx = reactive({ status: 'idle', cacheDate: '', providerDate: '', ratesFromTWD: null });
-        const exchangeRate = computed(() => {
-          const cur = setup.value.currency;
-          if (!cur) return null;
-          if (cur === 'TWD') return 1;
-          const rates = fx.ratesFromTWD;
-          if (!rates || !rates[cur]) return null;
-          const twdToCur = rates[cur]; // 1 TWD = x CUR
-          if (!twdToCur) return null;
-          return 1 / twdToCur; // 1 CUR = (1/x) TWD
-        });
+  if(act==='openFlights'){
+    openFlightsDialog();
+    return;
+  }
 
-        const ensureFx = async (force=false) => {
-          const today = new Date().toISOString().slice(0,10);
-          const cacheKey = 'tp_fx_twd_cache_v1';
+  if(act==='swapLang'){
+    const a = state.translate.sl;
+    state.translate.sl = state.translate.tl;
+    state.translate.tl = a;
+    saveState();
+    render();
+    return;
+  }
 
-          try {
-            if (!force) {
-              const raw = localStorage.getItem(cacheKey);
-              if (raw) {
-                const parsed = JSON.parse(raw);
-                if (parsed && parsed.cacheDate === today && parsed.ratesFromTWD) {
-                  fx.status = 'ok';
-                  fx.cacheDate = parsed.cacheDate;
-                  fx.providerDate = parsed.providerDate || '';
-                  fx.ratesFromTWD = parsed.ratesFromTWD;
-                  return;
-                }
-              }
-            }
+  if(act==='quickPhrase'){
+    state.translate.text = actEl.getAttribute('data-text') || '';
+    saveState();
+    render();
+    return;
+  }
 
-            fx.status = 'loading';
-            const res = await fetch('https://open.er-api.com/v6/latest/TWD');
-            const data = await res.json();
-            if (!data || data.result !== 'success' || !data.rates) throw new Error('FX API failed');
+  if(act==='openGoogleTranslate'){
+    const {sl, tl, text} = state.translate;
+    if(!text.trim()){ snack('請先輸入文字'); return; }
+    const url = `https://translate.google.com/?sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&text=${encodeURIComponent(text)}&op=translate`;
+    window.open(url, '_blank');
+    return;
+  }
 
-            fx.status = 'ok';
-            fx.cacheDate = today;
-            fx.providerDate = (data.time_last_update_utc ? data.time_last_update_utc.split(' ')[0] : '') || today;
-            fx.ratesFromTWD = data.rates;
+  if(act==='openChatGPTTranslate'){
+    const {sl, tl, text} = state.translate;
+    if(!text.trim()){ snack('請先輸入文字'); return; }
+    const prompt = `請把以下內容翻譯成「${tl}」，語氣自然、像當地人會說的句子；如果有更自然的說法，請給 2 個版本：\\n\\n【原文 (${sl})】\\n${text}`;
+    try{
+      await navigator.clipboard.writeText(prompt);
+      snack('已複製提示詞：打開 ChatGPT 直接貼上送出');
+    }catch{
+      snack('複製失敗：請手動長按全選複製');
+    }
+    window.open('https://chatgpt.com/', '_blank');
+    return;
+  }
 
-            localStorage.setItem(cacheKey, JSON.stringify({
-              cacheDate: fx.cacheDate,
-              providerDate: fx.providerDate,
-              ratesFromTWD: fx.ratesFromTWD
-            }));
-          } catch (e) {
-            console.error('FX fetch failed:', e);
-            fx.status = 'error';
-          }
-        };
-        const forceRefreshFx = async () => ensureFx(true);
-        ensureFx(false);
+  if(act==='clearTranslate'){
+    state.translate.text = '';
+    saveState();
+    render();
+    return;
+  }
 
-        // Search (Nominatim)
-        const searchQuery = ref('');
-        const suggestions = ref([]);
-        const isSearching = ref(false);
-        const detectedCountry = ref('');
-        let debounceTimer = null;
+  if(act==='refreshRate'){
+    await refreshRateIfNeeded(true);
+    return;
+  }
 
-        const debounceSearch = () => {
-          clearTimeout(debounceTimer);
-          if (!searchQuery.value) { suggestions.value = []; return; }
-          isSearching.value = true;
-          debounceTimer = setTimeout(async () => {
-            try {
-              const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery.value)}&addressdetails=1&limit=5`);
-              const data = await res.json();
-              suggestions.value = data || [];
-            } catch (e) {
-              console.error("Search failed", e);
-            } finally {
-              isSearching.value = false;
-            }
-          }, 600);
-        };
+  if(act==='addExpense'){
+    const titleEl = document.getElementById('expTitle');
+    const amtEl = document.getElementById('expAmount');
+    const dayEl = document.getElementById('expDay');
+    const title = (titleEl?.value || '').trim();
+    const amount = Number(amtEl?.value || 0);
+    const dayIndex = Number(dayEl?.value || state.selectedDay);
 
-        const selectLocation = (item) => {
-          const cityName = item.display_name.split(',')[0];
-          setup.value.destination = cityName;
-          searchQuery.value = cityName;
+    if(!title){ snack('請輸入項目'); return; }
+    if(!(amount>0)){ snack('金額要大於 0'); return; }
 
-          const cc = item.address?.country_code;
-          const countryName = item.address?.country;
+    state.money.expenses.unshift({ id: uid(), dayIndex, title, amount });
+    saveState();
+    render();
+    snack('已加入支出');
+    return;
+  }
 
-          if (cc && countryCurrencyMap[cc]) {
-            setup.value.currency = countryCurrencyMap[cc];
-            detectedCountry.value = `${countryName} (${countryCurrencyMap[cc]})`;
-            const selectEl = document.getElementById('currencySelect');
-            if (selectEl) {
-              selectEl.classList.add('ring-4', 'ring-green-200', 'bg-green-50');
-              setTimeout(() => selectEl.classList.remove('ring-4', 'ring-green-200', 'bg-green-50'), 900);
-            }
-          } else {
-            detectedCountry.value = '';
-          }
-          suggestions.value = [];
-        };
+  if(act==='removeExpense'){
+    const id = actEl.getAttribute('data-id');
+    state.money.expenses = state.money.expenses.filter(e=>e.id!==id);
+    saveState();
+    render();
+    snack('已刪除支出');
+    return;
+  }
 
-        const clearSearch = () => {
-          searchQuery.value = '';
-          setup.value.destination = '';
-          suggestions.value = [];
-          detectedCountry.value = '';
-        };
+  if(act==='clearExpenses'){
+    if(confirm('確定要清空所有支出？')){
+      state.money.expenses = [];
+      saveState();
+      render();
+      snack('已清空');
+    }
+    return;
+  }
+});
 
-        const initTrip = async () => {
-          if (!setup.value.destination) return alert('請輸入目的地');
-          const start = new Date(setup.value.startDate);
-          const end = new Date(setup.value.endDate);
-          if (end < start) return alert('回程日期不能早於去程日期');
+document.addEventListener('input', (ev)=>{
+  const el = ev.target;
+  const field = el.getAttribute('data-field');
+  if(!field) return;
 
-          const diffTime = Math.abs(end - start);
-          totalDays.value = Math.ceil(diffTime / (1000*60*60*24)) + 1;
+  // Trip fields
+  if(field.startsWith('trip.')){
+    const k = field.split('.')[1];
+    state.trip[k] = el.value;
+    saveState();
+    return;
+  }
 
-          days.value = [];
-          let d = new Date(start);
-          const weekDays = ['日','一','二','三','四','五','六'];
+  // Translate fields
+  if(field.startsWith('translate.')){
+    const k = field.split('.')[1];
+    state.translate[k] = el.value;
+    saveState();
+    return;
+  }
 
-          for (let i=0; i<totalDays.value; i++) {
-            const mm = d.getMonth()+1;
-            const dd = d.getDate();
-            days.value.push({
-              shortDate: `${mm}/${dd}`,
-              date: `${mm}/${dd} (${weekDays[d.getDay()]})`,
-              fullDate: d.toISOString().split('T')[0],
-              title: '',
-              items: []
-            });
-            d.setDate(d.getDate()+1);
-          }
+  // Money fields
+  if(field.startsWith('money.')){
+    const k = field.split('.')[1];
+    if(k==='autoRate'){
+      state.money.autoRate = el.checked;
+      saveState();
+      render();
+      if(state.money.autoRate) refreshRateIfNeeded(true);
+      return;
+    }
+    if(k==='exchangeRate'){
+      state.money.exchangeRate = Number(el.value || 0);
+      saveState();
+      return;
+    }
+    if(k==='currency'){
+      state.money.currency = (el.value || 'NZD').toUpperCase();
+      saveState();
+      // do not spam fetch on each keystroke
+      return;
+    }
+  }
 
-          currentDayIdx.value = 0;
-          hasStarted.value = true;
-          await ensureFx(false);
-        };
+  // Item fields (delegation via closest .item)
+  const wrap = el.closest('.item');
+  if(!wrap) return;
+  const dayIndex = Number(wrap.getAttribute('data-day'));
+  const idx = Number(wrap.getAttribute('data-idx'));
+  const day = state.days[dayIndex];
+  const it = day.items[idx];
 
-        const addDay = () => {
-          const lastDay = new Date(days.value[days.value.length-1].fullDate);
-          lastDay.setDate(lastDay.getDate()+1);
-          const weekDays = ['日','一','二','三','四','五','六'];
-          days.value.push({
-            shortDate: `${lastDay.getMonth()+1}/${lastDay.getDate()}`,
-            date: `${lastDay.getMonth()+1}/${lastDay.getDate()} (${weekDays[lastDay.getDay()]})`,
-            fullDate: lastDay.toISOString().split('T')[0],
-            title: '',
-            items: []
-          });
-          setup.value.endDate = lastDay.toISOString().split('T')[0];
-          totalDays.value++;
-          nextTick(() => { currentDayIdx.value = days.value.length-1; });
-        };
+  if(field==='title'){
+    it.title = el.value;
+    saveState();
+    return;
+  }
 
-        // Items + schedule
-        const nextItemId = ref(1);
-        const makeItem = (time='09:00') => ({
-          id: nextItemId.value++,
-          time,
-          locked: false,
-          conflict: false,
-          conflictOverMin: 0,
-          category: '景點',
-          activity: '',
-          location: '',
-          locationAddress: '',
-          lat: null,
-          lon: null,
-          stay: { h:'01', m:'00' },
-          transport: { mode:'walk', h:'00', m:'20' },
-          routeOptions: null
-        });
+  if(field==='start'){
+    it.start = el.value;
+    // if user edits time manually, treat as locked? keep their switch separate
+    recalcFrom(dayIndex, idx+1);
+    render();
+    return;
+  }
 
-        const currentDay = computed(() => days.value[currentDayIdx.value] || { items: [], date:'', title:'' });
+  if(field==='stayMin'){
+    it.stayMin = Math.max(0, Number(el.value || 0));
+    recalcFrom(dayIndex, idx+1);
+    render();
+    return;
+  }
 
-        const parseTimeToMin = (t) => {
-          if (!t || !/^\d{2}:\d{2}$/.test(t)) return null;
-          const [h,m] = t.split(':').map(n => parseInt(n,10));
-          return h*60 + m;
-        };
-        const minToTime = (min) => {
-          min = ((min % 1440) + 1440) % 1440;
-          const h = String(Math.floor(min/60)).padStart(2,'0');
-          const m = String(min%60).padStart(2,'0');
-          return `${h}:${m}`;
-        };
-        const durToMin = (d) => (parseInt(d?.h||'0',10)*60 + parseInt(d?.m||'0',10));
-        const stayLabel = (d) => {
-          const h = parseInt(d?.h||'0',10);
-          const m = parseInt(d?.m||'0',10);
-          const hh = h>0 ? `${h}hr ` : '';
-          return `${hh}${String(m).padStart(2,'0')}min`;
-        };
+  if(field==='locked'){
+    it.locked = el.checked;
+    saveState();
+    render();
+    return;
+  }
 
-        const recalcDaySchedule = (day) => {
-          if (!day || !day.items) return;
-          day.items.forEach(i => { i.conflict=false; i.conflictOverMin=0; });
+  if(field==='placeName'){
+    it.place = it.place || {};
+    it.place.name = el.value;
+    saveState();
+    return;
+  }
 
-          for (let i=0; i<day.items.length-1; i++) {
-            const cur = day.items[i];
-            const next = day.items[i+1];
-            const startMin = parseTimeToMin(cur.time);
-            if (startMin == null) continue;
+  if(field==='travelToNextMin'){
+    it.travelToNextMin = Math.max(0, Number(el.value || 0));
+    recalcFrom(dayIndex, idx+1);
+    render();
+    return;
+  }
+});
 
-            const expectedNextStart = startMin + durToMin(cur.stay) + durToMin(cur.transport);
-            if (!next.locked) {
-              next.time = minToTime(expectedNextStart);
-            } else {
-              const lockedMin = parseTimeToMin(next.time);
-              if (lockedMin != null && lockedMin < expectedNextStart) {
-                next.conflict = true;
-                next.conflictOverMin = expectedNextStart - lockedMin;
-              }
-              if (lockedMin == null) next.time = minToTime(expectedNextStart);
-            }
-          }
-        };
+document.addEventListener('change', async (ev)=>{
+  const el = ev.target;
+  const field = el.getAttribute('data-field');
+  if(!field) return;
 
-        const addItem = () => {
-          const d = currentDay.value;
-          if (!d.items.length) d.items.push(makeItem('09:00'));
-          else {
-            const last = d.items[d.items.length-1];
-            const lastMin = parseTimeToMin(last.time) ?? 9*60;
-            const nextStart = lastMin + durToMin(last.stay) + durToMin(last.transport);
-            d.items.push(makeItem(minToTime(nextStart)));
-          }
-          recalcDaySchedule(d);
-        };
+  // When currency edited and user leaves field: refresh rate
+  if(field==='money.currency'){
+    state.money.currency = (el.value || 'NZD').toUpperCase();
+    saveState();
+    if(state.money.autoRate) await refreshRateIfNeeded(true);
+    render();
+    return;
+  }
 
-        const removeItem = (idx) => {
-          currentDay.value.items.splice(idx,1);
-          recalcDaySchedule(currentDay.value);
-        };
+  // Place geocode on blur-like behavior: use change event (mobile friendly)
+  if(field==='placeName'){
+    const wrap = el.closest('.item');
+    if(!wrap) return;
+    const dayIndex = Number(wrap.getAttribute('data-day'));
+    const idx = Number(wrap.getAttribute('data-idx'));
+    const it = state.days[dayIndex].items[idx];
+    const q = (it.place?.name || '').trim();
+    if(!q) return;
 
-        const toggleLock = (item) => {
-          item.locked = !item.locked;
-          recalcDaySchedule(currentDay.value);
-        };
+    snack('定位中…');
+    try{
+      const g = await geocodeNominatim(q);
+      it.place = { ...it.place, ...g };
+      saveState();
+      render();
 
-        // Categories
-        const categories = ['美食','購物','住宿','遊樂','交通','景點'];
-        const getCatIcon = (c) => {
-          const map = {
-            '美食': 'fa-utensils',
-            '購物': 'fa-bag-shopping',
-            '住宿': 'fa-hotel',
-            '遊樂': 'fa-face-laugh-beam',
-            '交通': 'fa-route',
-            '景點': 'fa-mountain-sun'
-          };
-          return map[c] || 'fa-tag';
-        };
-
-        // Transit
-        const getTransIcon = (m) => ({'car':'fa-car','walk':'fa-person-walking','transit':'fa-train-subway','rest':'fa-mug-hot'}[m] || 'fa-car');
-        const getTransLabel = (t) => {
-          if (!t) return '設定交通';
-          const modeMap = {'car':'開車','walk':'步行','transit':'大眾','rest':'休息'};
-          const h = parseInt(t.h||'0',10) > 0 ? `${parseInt(t.h||'0',10)}hr ` : '';
-          return `${modeMap[t.mode]} · ${h}${String(t.m||'0').padStart(2,'0')}min`;
-        };
-
-        // Wheel
-        const wheelState = reactive({
-          show:false, mode:'time', targetId:null,
-          tempH:'10', tempM:'00', transMode:'walk', tempCat:'景點'
-        });
-        const hoursList = computed(() => {
-          const len = wheelState.mode === 'time' ? 24 : 11;
-          return Array.from({length: len}, (_,i)=> i.toString().padStart(2,'0'));
-        });
-        const minutesList = computed(() => Array.from({length:12},(_,i)=> (i*5).toString().padStart(2,'0')));
-        const wheelHour = ref(null);
-        const wheelMinute = ref(null);
-
-        const scrollToVal = (el, val) => {
-          if (!el) return;
-          const idx = Array.from(el.children).findIndex(i => i.innerText === val);
-          if (idx !== -1) el.scrollTop = idx * 40;
-        };
-        const onScroll = (type) => {
-          const el = type === 'hour' ? wheelHour.value : wheelMinute.value;
-          if (!el) return;
-          const index = Math.round(el.scrollTop / 40);
-          const list = type === 'hour' ? hoursList.value : minutesList.value;
-          if (list[index]) {
-            if (type === 'hour') wheelState.tempH = list[index];
-            else wheelState.tempM = list[index];
-          }
-        };
-        const findItemById = (id) => currentDay.value.items.find(i => i.id === id);
-
-        const openWheel = (mode, itemId) => {
-          wheelState.mode = mode;
-          wheelState.targetId = itemId;
-          wheelState.show = true;
-
-          const item = findItemById(itemId);
-          if (!item) return;
-
-          if (mode === 'time') {
-            const [h,m] = (item.time || '09:00').split(':');
-            wheelState.tempH = h; wheelState.tempM = m;
-          } else if (mode === 'stay') {
-            wheelState.tempH = item.stay?.h || '01';
-            wheelState.tempM = item.stay?.m || '00';
-          } else if (mode === 'transit') {
-            wheelState.transMode = item.transport?.mode || 'walk';
-            wheelState.tempH = item.transport?.h || '00';
-            wheelState.tempM = item.transport?.m || '20';
-          } else if (mode === 'cat') {
-            wheelState.tempCat = item.category || '景點';
-          }
-
-          nextTick(() => {
-            if (mode !== 'cat') {
-              scrollToVal(wheelHour.value, wheelState.tempH);
-              scrollToVal(wheelMinute.value, wheelState.tempM);
-            }
-          });
-        };
-        const closeWheel = () => wheelState.show = false;
-
-        const saveWheel = () => {
-          const item = findItemById(wheelState.targetId);
-          if (!item) return closeWheel();
-
-          if (wheelState.mode === 'cat') {
-            item.category = wheelState.tempCat;
-            closeWheel();
-            return;
-          }
-
-          if (wheelState.mode === 'time') item.time = `${wheelState.tempH}:${wheelState.tempM}`;
-          else if (wheelState.mode === 'stay') item.stay = { h: wheelState.tempH, m: wheelState.tempM };
-          else if (wheelState.mode === 'transit') item.transport = { mode: wheelState.transMode, h: wheelState.tempH, m: wheelState.tempM };
-
-          closeWheel();
-          recalcDaySchedule(currentDay.value);
-        };
-
-        // Geocode (Nominatim)
-        const tryGeocode = async (item) => {
-          if (!item || !item.location) return;
-          try {
-            const q = encodeURIComponent(item.location);
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}&addressdetails=1&limit=1`);
-            const data = await res.json();
-            if (data && data[0]) {
-              item.lat = parseFloat(data[0].lat);
-              item.lon = parseFloat(data[0].lon);
-              item.locationAddress = data[0].display_name || '';
-              item.routeOptions = null;
-            }
-          } catch(e) { console.error('Geocode failed', e); }
-        };
-
-        // Route (OSRM)
-        const canRoute = (idx) => {
-          const a = currentDay.value.items[idx];
-          const b = currentDay.value.items[idx+1];
-          return !!(a && b && a.lat && a.lon && b.lat && b.lon);
-        };
-        const buildGmapsUrl = (a, b) => {
-          const o = `${a.lat},${a.lon}`;
-          const d = `${b.lat},${b.lon}`;
-          return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}&travelmode=driving`;
-        };
-        const osrmDurationMin = async (profile, a, b) => {
-          const url = `https://router.project-osrm.org/route/v1/${profile}/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`;
-          const res = await fetch(url);
-          const data = await res.json();
-          const sec = data?.routes?.[0]?.duration;
-          if (!sec) return null;
-          return Math.max(1, Math.round(sec/60));
-        };
-        const calcRoute = async (idx) => {
-          const a = currentDay.value.items[idx];
-          const b = currentDay.value.items[idx+1];
-          if (!a || !b || !a.lat || !b.lat) return;
-          try {
-            const [walkMin, driveMin] = await Promise.all([
-              osrmDurationMin('foot', a, b),
-              osrmDurationMin('driving', a, b)
-            ]);
-            a.routeOptions = { walkMin: walkMin ?? '—', driveMin: driveMin ?? '—', gmapsUrl: buildGmapsUrl(a,b) };
-          } catch (e) { console.error('Route failed', e); }
-        };
-
-        // Money
-        const expenses = ref([]);
-        const newExpense = ref({ item:'', amount:'' });
-        const addExpense = () => {
-          const amt = Number(newExpense.value.amount);
-          if (!newExpense.value.item || !Number.isFinite(amt)) return;
-          expenses.value.push({ item:newExpense.value.item, amount:amt, dayIdx: currentDayIdx.value });
-          newExpense.value = { item:'', amount:'' };
-        };
-        const removeExpense = (i) => expenses.value.splice(i,1);
-        const totalExpense = computed(() => expenses.value.reduce((sum,e)=> sum + (e.amount||0), 0));
-        const dailyExpenseMap = computed(() => {
-          const map = Array.from({length: days.value.length}, () => 0);
-          for (const e of expenses.value) {
-            const idx = Number.isFinite(e.dayIdx) ? e.dayIdx : 0;
-            if (map[idx] != null) map[idx] += (e.amount||0);
-          }
-          return map;
-        });
-
-        // Flights
-        const nextFlightId = ref(1);
-        const flightSegments = ref([]);
-        const addFlightSegment = () => {
-          flightSegments.value.push({
-            id: nextFlightId.value++,
-            depDayIdx: currentDayIdx.value,
-            depTime: '12:25',
-            depAirport: 'TPE',
-            arrTime: '14:20',
-            arrAirport: 'NRT',
-            arrOffset: 0,
-            flightNo: 'BR198'
-          });
-        };
-        const removeFlight = (segId) => {
-          const idx = flightSegments.value.findIndex(s => s.id === segId);
-          if (idx !== -1) flightSegments.value.splice(idx,1);
-        };
-        const flightById = (segId) => flightSegments.value.find(s => s.id === segId) || {};
-        const flightsForDay = computed(() => {
-          const di = currentDayIdx.value;
-          const cards = [];
-          for (const seg of flightSegments.value) {
-            const depDay = seg.depDayIdx;
-            const arrDay = seg.depDayIdx + (seg.arrOffset || 0);
-            if ((seg.arrOffset||0) === 0) {
-              if (depDay === di) cards.push({ key:`f-${seg.id}-full`, type:'full', segId: seg.id });
-            } else {
-              if (depDay === di) cards.push({ key:`f-${seg.id}-dep`, type:'dep', segId: seg.id });
-              if (arrDay === di) cards.push({ key:`f-${seg.id}-arr`, type:'arr', segId: seg.id });
-            }
-          }
-          const weight = (t)=> t==='dep'?0:(t==='full'?1:2);
-          cards.sort((a,b)=> weight(a.type)-weight(b.type));
-          return cards;
-        });
-        const flightDurationMin = (segId) => {
-          const s = flightById(segId);
-          const dep = parseTimeToMin(s.depTime);
-          const arr = parseTimeToMin(s.arrTime);
-          if (dep == null || arr == null) return null;
-          const off = parseInt(s.arrOffset||0,10);
-          let dur = (off*1440) + (arr - dep);
-          if (dur < 0) dur += 1440;
-          return dur;
-        };
-        const formatDuration = (min) => {
-          if (!Number.isFinite(min) || min == null) return '—';
-          const h = Math.floor(min/60);
-          const m = min%60;
-          return `${h}h ${String(m).padStart(2,'0')}m`;
-        };
-
-        // Translate: Google + ChatGPT (no key)
-        const translator = reactive({ sl:'auto', tl:'ja', text:'', tone:'natural' });
-        const langMeta = [
-          { code:'auto', label:'自動' },
-          { code:'zh-TW', label:'繁中' },
-          { code:'ja', label:'日文' },
-          { code:'en', label:'英文' },
-          { code:'ko', label:'韓文' },
-          { code:'th', label:'泰文' },
-          { code:'vi', label:'越南' },
-        ];
-        const langLabel = (code) => (langMeta.find(x=>x.code===code)?.label || code);
-
-        const langPillsSource = computed(() => [
-          { code:'auto', label:'自動' },
-          { code:'zh-TW', label:'繁中' },
-          { code:'en', label:'英文' },
-          { code:'ja', label:'日文' },
-          { code:'ko', label:'韓文' },
-          { code:'th', label:'泰文' },
-        ]);
-        const langPillsTarget = computed(() => [
-          { code:'zh-TW', label:'繁中' },
-          { code:'en', label:'英文' },
-          { code:'ja', label:'日文' },
-          { code:'ko', label:'韓文' },
-          { code:'th', label:'泰文' },
-          { code:'vi', label:'越南' },
-        ]);
-
-        const tonePills = [
-          { key:'natural', label:'自然口語', icon:'fa-comment-dots' },
-          { key:'polite', label:'超禮貌', icon:'fa-handshake' },
-          { key:'short', label:'超短一句', icon:'fa-bolt' },
-          { key:'local', label:'像在地人', icon:'fa-location-dot' },
-        ];
-
-        const quickPhrases = [
-          '請問這裡怎麼去？',
-          '我要點餐，謝謝。',
-          '可以刷卡嗎？',
-          '這個多少錢？',
-          '我想要一份不辣。',
-          '請幫我叫計程車。'
-        ];
-
-        const toneInstruction = (toneKey) => {
-          const map = {
-            natural: '請用自然、口語、好懂但不浮誇的語氣。',
-            polite: '請用非常禮貌、適合對店員/櫃台/陌生人的語氣。',
-            short: '請濃縮成一句話、最短但不失禮。',
-            local: '請用更像當地人日常會講的說法（自然、簡潔）。'
-          };
-          return map[toneKey] || map.natural;
-        };
-
-        const chatgptPrompt = computed(() => {
-          const src = langLabel(translator.sl || 'auto');
-          const tgt = langLabel(translator.tl || 'zh-TW');
-          const txt = translator.text.trim();
-          const tone = toneInstruction(translator.tone);
-
-          return [
-            `請把以下內容從「${src}」翻譯成「${tgt}」。`,
-            tone,
-            `請輸出：`,
-            `1) 自然口語版`,
-            `2) 超禮貌版`,
-            `3) 超短一句版`,
-            `最後再提供「中文回譯」讓我確認意思是否正確。`,
-            ``,
-            `【內容】`,
-            txt || '(尚未輸入文字)'
-          ].join('\n');
-        });
-
-        const copyTextFallback = (text) => {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          ta.style.position = 'fixed';
-          ta.style.top = '-9999px';
-          ta.style.left = '-9999px';
-          document.body.appendChild(ta);
-          ta.focus();
-          ta.select();
-          try {
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            return true;
-          } catch (e) {
-            document.body.removeChild(ta);
-            return false;
-          }
-        };
-
-        const copyChatGPTPrompt = async () => {
-          const text = chatgptPrompt.value;
-          try {
-            if (navigator.clipboard && window.isSecureContext) {
-              await navigator.clipboard.writeText(text);
-              showToast('已複製 ChatGPT 提示詞');
-              return;
-            }
-          } catch (e) {}
-          const ok = copyTextFallback(text);
-          showToast(ok ? '已複製 ChatGPT 提示詞' : '複製失敗（請長按全選複製）');
-        };
-
-        const openChatGPT = () => {
-          const url = 'https://chatgpt.com/';
-          const w = window.open(url, '_blank');
-          if (!w) window.location.href = url;
-        };
-
-        const openGoogleTranslate = () => {
-          const text = translator.text.trim();
-          if (!text) return;
-          const sl = translator.sl || 'auto';
-          const tl = translator.tl || 'zh-TW';
-          const url = `https://translate.google.com/?sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&text=${encodeURIComponent(text)}&op=translate`;
-          const w = window.open(url, '_blank');
-          if (!w) window.location.href = url;
-        };
-
-        const clearTranslate = () => { translator.text=''; };
-        const swapLang = () => {
-          const a = translator.sl;
-          translator.sl = translator.tl;
-          translator.tl = (a === 'auto') ? 'zh-TW' : a;
-          showToast('已交換語言');
-        };
-        const appendPhrase = (p) => {
-          translator.text = (translator.text ? (translator.text + '\n') : '') + p;
-          showToast('已加入常用句');
-        };
-
-        return {
-          hasStarted, viewMode, currentDayIdx, setup, days, totalDays, currentDay,
-          toast, fx, exchangeRate, forceRefreshFx,
-          searchQuery, suggestions, isSearching, detectedCountry,
-          debounceSearch, selectLocation, clearSearch,
-          initTrip, addDay,
-          addItem, removeItem, openWheel, closeWheel, saveWheel, onScroll,
-          wheelState, hoursList, minutesList, wheelHour, wheelMinute,
-          getTransIcon, getTransLabel, toggleLock, stayLabel,
-          categories, getCatIcon,
-          tryGeocode, canRoute, calcRoute,
-          expenses, newExpense, addExpense, removeExpense, totalExpense, dailyExpenseMap,
-          flightsForDay, addFlightSegment, removeFlight, flightById, flightDurationMin, formatDuration,
-          translator, langPillsSource, langPillsTarget, tonePills,
-          quickPhrases, appendPhrase, swapLang,
-          openGoogleTranslate, openChatGPT,
-          copyChatGPTPrompt, clearTranslate,
-          chatgptPrompt
-        };
+      // if next exists and both located, auto fill travel estimate
+      const day = state.days[dayIndex];
+      const next = day.items[idx+1];
+      if(next?.place?.lat!=null){
+        const km = haversineKm(it.place.lat, it.place.lon, next.place.lat, next.place.lon);
+        const mode = it.routeMode || state.routeModeDefault || 'walk';
+        it.travelToNextMin = estimateMinutesByMode(km, mode);
+        recalcFrom(dayIndex, idx+1);
+        saveState();
+        render();
       }
-    }).mount('#app');
-  </script>
+      // if prev exists and both located, update prev segment estimate
+      const prev = state.days[dayIndex].items[idx-1];
+      if(prev?.place?.lat!=null){
+        const km = haversineKm(prev.place.lat, prev.place.lon, it.place.lat, it.place.lon);
+        const mode = prev.routeMode || state.routeModeDefault || 'walk';
+        prev.travelToNextMin = estimateMinutesByMode(km, mode);
+        recalcFrom(dayIndex, idx);
+        saveState();
+        render();
+      }
+
+      snack('已定位');
+    }catch(e){
+      snack('定位失敗：' + (e.message || ''));
+    }
+  }
+});
+
+/* ---------------------------
+   Flights dialog
+---------------------------- */
+const dlgMask = document.getElementById('dlgMask');
+const dlgBody = document.getElementById('dlgBody');
+document.getElementById('dlgClose').addEventListener('click', closeFlightsDialog);
+document.getElementById('dlgCancel').addEventListener('click', closeFlightsDialog);
+document.getElementById('dlgSave').addEventListener('click', saveFlightsDialog);
+
+let dlgDraft = null;
+
+function openFlightsDialog(){
+  dlgDraft = structuredClone(state.flights);
+
+  dlgBody.innerHTML = `
+    <div class="muted" style="font-weight:900;">提示：若「抵達時間」早於「起飛時間」，可勾選「隔天抵達」。</div>
+    <div class="hr"></div>
+
+    ${renderFlightGroup('去程 Outbound', 'outbound', dlgDraft.outbound)}
+    <div class="hr"></div>
+    ${renderFlightGroup('回程 Inbound', 'inbound', dlgDraft.inbound)}
+  `;
+
+  dlgMask.style.display='flex';
+
+  // wire inputs
+  dlgBody.querySelectorAll('[data-f]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const key = inp.getAttribute('data-group');
+      const idx = Number(inp.getAttribute('data-idx'));
+      const f = inp.getAttribute('data-f');
+      const val = inp.type==='checkbox' ? inp.checked : inp.value;
+      dlgDraft[key][idx][f] = val;
+
+      // auto infer next day if arrive earlier and checkbox not set
+      if(f==='arriveTime' || f==='departTime'){
+        const dep = timeToMin(dlgDraft[key][idx].departTime);
+        const arr = timeToMin(dlgDraft[key][idx].arriveTime);
+        if(dep!=null && arr!=null){
+          dlgDraft[key][idx].arriveNextDay = (arr < dep);
+          const cb = dlgBody.querySelector(\`input[type="checkbox"][data-group="\${key}"][data-idx="\${idx}"][data-f="arriveNextDay"]\`);
+          if(cb) cb.checked = dlgDraft[key][idx].arriveNextDay;
+        }
+      }
+    });
+  });
+}
+
+function renderFlightGroup(title, groupKey, legs){
+  return `
+    <div style="font-weight:1100;margin-bottom:10px;">${esc(title)}</div>
+    ${legs.map((leg, i)=>`
+      <div class="card" style="box-shadow:none;border:1px solid rgba(0,0,0,.06);margin-bottom:10px;">
+        <div class="card-bd" style="padding-top:14px;">
+          <div class="row" style="flex-wrap:wrap;">
+            <div class="col" style="flex:1;min-width:160px;">
+              <div class="label">航班號</div>
+              <input class="tf" value="${esc(leg.flightNo)}" data-group="${groupKey}" data-idx="${i}" data-f="flightNo" />
+            </div>
+            <div class="col" style="width:110px;">
+              <div class="label">From</div>
+              <input class="tf" value="${esc(leg.from)}" data-group="${groupKey}" data-idx="${i}" data-f="from" />
+            </div>
+            <div class="col" style="width:110px;">
+              <div class="label">To</div>
+              <input class="tf" value="${esc(leg.to)}" data-group="${groupKey}" data-idx="${i}" data-f="to" />
+            </div>
+          </div>
+
+          <div class="row" style="flex-wrap:wrap;margin-top:10px;">
+            <div class="col" style="flex:1;min-width:170px;">
+              <div class="label">起飛日期</div>
+              <input class="tf" type="date" value="${esc(leg.departDate)}" data-group="${groupKey}" data-idx="${i}" data-f="departDate" />
+            </div>
+            <div class="col" style="width:160px;">
+              <div class="label">起飛時間</div>
+              <input class="tf" type="time" value="${esc(leg.departTime)}" data-group="${groupKey}" data-idx="${i}" data-f="departTime" />
+            </div>
+            <div class="col" style="width:160px;">
+              <div class="label">抵達時間</div>
+              <input class="tf" type="time" value="${esc(leg.arriveTime)}" data-group="${groupKey}" data-idx="${i}" data-f="arriveTime" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:10px;flex-wrap:wrap;">
+            <div class="switch">
+              <span>隔天抵達</span>
+              <input type="checkbox" ${leg.arriveNextDay?'checked':''} data-group="${groupKey}" data-idx="${i}" data-f="arriveNextDay" />
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function closeFlightsDialog(){
+  dlgMask.style.display='none';
+  dlgDraft = null;
+}
+
+function saveFlightsDialog(){
+  if(!dlgDraft) return;
+  state.flights = dlgDraft;
+  saveState();
+  closeFlightsDialog();
+  render();
+  snack('航班已儲存');
+}
+
+// click outside dialog to close
+dlgMask.addEventListener('click', (e)=>{
+  if(e.target === dlgMask) closeFlightsDialog();
+});
+
+/* ---------------------------
+   Service Worker register
+---------------------------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+
+/* ---------------------------
+   First render + rate refresh
+---------------------------- */
+render();
+refreshRateIfNeeded(false);
+</script>
 </body>
 </html>
