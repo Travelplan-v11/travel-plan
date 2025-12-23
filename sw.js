@@ -1,9 +1,9 @@
 /* sw.js - Travel Plan PWA
    - App shell cache
-   - Network-first for navigations
-   - Stale-while-revalidate for CDN
+   - Runtime cache for CDN/API (stale-while-revalidate)
+   - Offline fallback for navigations
 */
-const VERSION = 'tp-pwa-v2-2025-12-23';
+const VERSION = 'tp-pwa-v2.0.0';
 const STATIC_CACHE = `static-${VERSION}`;
 const RUNTIME_CACHE = `runtime-${VERSION}`;
 
@@ -34,22 +34,23 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-async function cacheFirst(req){
+async function cacheFirst(req) {
   const cached = await caches.match(req);
-  if(cached) return cached;
+  if (cached) return cached;
   const res = await fetch(req);
   const cache = await caches.open(RUNTIME_CACHE);
-  try{ cache.put(req, res.clone()); }catch(_){}
+  try { cache.put(req, res.clone()); } catch (_) {}
   return res;
 }
 
-async function staleWhileRevalidate(req){
+async function staleWhileRevalidate(req) {
   const cache = await caches.open(RUNTIME_CACHE);
   const cached = await cache.match(req);
-  const fetchPromise = fetch(req).then((res)=>{
-    try{ cache.put(req, res.clone()); }catch(_){}
+  const fetchPromise = fetch(req).then((res) => {
+    try { cache.put(req, res.clone()); } catch (_) {}
     return res;
-  }).catch(()=>null);
+  }).catch(() => null);
+
   return cached || (await fetchPromise) || Response.error();
 }
 
@@ -57,30 +58,30 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  if(req.method !== 'GET') return;
+  if (req.method !== 'GET') return;
 
-  // Navigation: network-first, fallback to cached index.html
-  if(req.mode === 'navigate'){
-    event.respondWith((async ()=>{
-      try{
+  // Navigations -> index.html (keeps it SPA/PWA friendly on Pages)
+  if (req.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
         const res = await fetch(req);
         const cache = await caches.open(RUNTIME_CACHE);
-        try{ cache.put('./index.html', res.clone()); }catch(_){}
+        try { cache.put('./index.html', res.clone()); } catch (_) {}
         return res;
-      }catch(e){
+      } catch (e) {
         const cached = await caches.match('./index.html');
-        return cached || new Response('offline', {status:503, headers:{'Content-Type':'text/plain; charset=utf-8'}});
+        return cached || new Response('offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
       }
     })());
     return;
   }
 
-  // Same-origin: cache-first
-  if(url.origin === self.location.origin){
+  // Same-origin -> cache-first
+  if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(req));
     return;
   }
 
-  // Cross-origin (CDN/API): SWR
+  // Cross-origin (CDN / API) -> stale-while-revalidate
   event.respondWith(staleWhileRevalidate(req));
 });
