@@ -1,5 +1,5 @@
 /* sw.js - GitHub Pages friendly (project site) */
-const CACHE_VERSION = "travel-plan-v1.0.3";
+const CACHE_VERSION = "travel-plan-v1.0.6";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -27,15 +27,16 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // Only handle GET
   if (req.method !== "GET") return;
 
-  // For page navigation
+  // Handle top-level navigations
   if (req.mode === "navigate") {
     event.respondWith((async () => {
       try {
-        const fresh = await fetch(req);
+        // Always try the network first for HTML
+        const fresh = await fetch(req, { cache: "no-store" });
         const cache = await caches.open(CACHE_VERSION);
+        // cache the shell under "./"
         cache.put("./", fresh.clone());
         return fresh;
       } catch (e) {
@@ -46,10 +47,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets
+  // Static assets: cache-first
   event.respondWith((async () => {
     const cached = await caches.match(req);
     if (cached) return cached;
+
     try {
       const fresh = await fetch(req);
       const cache = await caches.open(CACHE_VERSION);
