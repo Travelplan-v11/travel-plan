@@ -1,9 +1,5 @@
-/* sw.js - Travel Plan PWA
-   - App shell cache
-   - Runtime cache for CDN/API (stale-while-revalidate)
-   - Offline fallback for navigations
-*/
-const VERSION = 'tp-pwa-v2.0.0';
+/* sw.js - Travel Plan PWA (cache-first shell + stale-while-revalidate runtime) */
+const VERSION = 'tp-pwa-v2-0-0';
 const STATIC_CACHE = `static-${VERSION}`;
 const RUNTIME_CACHE = `runtime-${VERSION}`;
 
@@ -11,7 +7,9 @@ const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './sw.js'
+  './sw.js',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,15 +37,15 @@ async function cacheFirst(req) {
   if (cached) return cached;
   const res = await fetch(req);
   const cache = await caches.open(RUNTIME_CACHE);
-  try { cache.put(req, res.clone()); } catch (_) {}
+  try { await cache.put(req, res.clone()); } catch (_) {}
   return res;
 }
 
 async function staleWhileRevalidate(req) {
   const cache = await caches.open(RUNTIME_CACHE);
   const cached = await cache.match(req);
-  const fetchPromise = fetch(req).then((res) => {
-    try { cache.put(req, res.clone()); } catch (_) {}
+  const fetchPromise = fetch(req).then(async (res) => {
+    try { await cache.put(req, res.clone()); } catch (_) {}
     return res;
   }).catch(() => null);
 
@@ -60,13 +58,13 @@ self.addEventListener('fetch', (event) => {
 
   if (req.method !== 'GET') return;
 
-  // Navigations -> index.html (keeps it SPA/PWA friendly on Pages)
+  // SPA-like navigation fallback
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
       try {
         const res = await fetch(req);
         const cache = await caches.open(RUNTIME_CACHE);
-        try { cache.put('./index.html', res.clone()); } catch (_) {}
+        try { await cache.put('./index.html', res.clone()); } catch (_) {}
         return res;
       } catch (e) {
         const cached = await caches.match('./index.html');
@@ -76,12 +74,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Same-origin -> cache-first
+  // same-origin -> cache first (fast)
   if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(req));
     return;
   }
 
-  // Cross-origin (CDN / API) -> stale-while-revalidate
+  // cross-origin -> stale-while-revalidate
   event.respondWith(staleWhileRevalidate(req));
 });
